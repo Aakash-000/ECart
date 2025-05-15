@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const pool = require('../config/db'); // Import the database pool
-const jwt = require('jsonwebtoken'); // Import jsonwebtoken
 
 // Import PayPal SDK
 const paypal = require('@paypal/checkout-server-sdk');
@@ -10,25 +9,20 @@ const paypal = require('@paypal/checkout-server-sdk');
 // Configure PayPal Client
 // Replace with your actual PayPal Client ID and Client Secret
 const jwtSecret = 'YOUR_SECRET_KEY'; // **Replace with a strong, securely stored secret key**
+ // This secret is no longer used for JWTs but might be needed for other purposes or can be removed if not.
 
-// Middleware to authenticate JWT
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Extract token from "Bearer TOKEN" format
-
-  if (token == null) {
-    return res.sendStatus(401); // If there's no token, return 401 Unauthorized
+// Middleware to check if user is authenticated via session
+function isAuthenticated(req, res, next) {
+  if (req.session && req.session.user) {
+    // User is authenticated, proceed to the next middleware or route handler
+    return next();
   }
+ else {
+    // User is not authenticated, return 401 Unauthorized
+    return res.sendStatus(401); // If there's no token, return 401 Unauthorized
 
-  jwt.verify(token, jwtSecret, (err, user) => {
-    if (err) {
-      return res.sendStatus(403); // If token is invalid, return 403 Forbidden
-    }
-    req.user = user; // Attach user information from token payload to request object
-    next(); // Proceed to the next middleware or route handler
-  });
-}
-
+  }
+  }
 
 
 const environment = new paypal.core.SandboxEnvironment('YOUR_PAYPAL_CLIENT_ID', 'YOUR_PAYPAL_CLIENT_SECRET');
@@ -95,15 +89,10 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    // Passwords match, generate a JWT
-    const token = jwt.sign(
-      { userId: user.rows[0].id, email: user.rows[0].email }, // Include user ID and email in the payload
-      jwtSecret,
-      { expiresIn: '1h' } // Token expires in 1 hour
-    );
-    res.status(200).json({ message: 'Login successful.', token });
-
-  } catch (err) {
+    // Passwords match, create a session for the user
+    req.session.user = { id: user.rows[0].id, email: user.rows[0].email };
+    res.status(200).json({ message: 'Login successful.' });
+  }  catch (err) {
     console.error('Error during login:', err);
     res.status(500).json({ error: 'An error occurred during login.' });
   }
@@ -112,13 +101,22 @@ router.post('/login', async (req, res) => {
 const client = new paypal.core.PayPalHttpClient(environment);
 
 
-router.get('/capture-paypal-order', (req, res) => {
+router.get('/capture-paypal-order', isAuthenticated, (req, res) => {
   res.json({ message: 'capture-paypal-order route' });
 });
 
-router.post('/create-payment-intent', (req, res) => {
+router.post('/create-payment-intent', isAuthenticated, (req, res) => {
   res.json({ message: 'create-payment-intent route' });
 });
+
+// Route for user logout
+router.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'An error occurred during logout.' });
+    }
+    res.status(200).json({ message: 'Logout successful.' });
+  });
 
 router.post('/create-paypal-order', (req, res) => {
   // Create a request to create an order

@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Search, ShoppingCart, ChevronDown, Phone, User, Heart, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/context/cart-context"
+import { useAuthStore } from "@/store/authStore"
 
 export default function Navbar() {
   const { state } = useCart()
@@ -12,6 +13,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
 
+  const { token, logout } = useAuthStore();
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen)
     if (searchOpen) setSearchOpen(false)
@@ -88,10 +90,31 @@ export default function Navbar() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
-              <Link href="/account" className="flex items-center text-sm group">
-                <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
-                <span className="group-hover:text-indigo-600 transition-colors">Account</span>
-              </Link>
+ {token ? (
+ <>
+ <Link href="/account" className="flex items-center text-sm group">
+ <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
+ <span className="group-hover:text-indigo-600 transition-colors">Account</span>
+ </Link>
+ <button
+ className="flex items-center text-sm group"
+ onClick={logout}
+ >
+ <span className="group-hover:text-indigo-600 transition-colors">Logout</span>
+ </button>
+ </>
+ ) : (
+ <>
+ <Link href="/login" className="flex items-center text-sm group">
+ <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
+ <span className="group-hover:text-indigo-600 transition-colors">Login</span>
+ </Link>
+ <Link href="/signup" className="flex items-center text-sm group">
+ <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
+ <span className="group-hover:text-indigo-600 transition-colors">Sign Up</span>
+ </Link>
+ )}
+
               <Link href="/wishlist" className="flex items-center text-sm group">
                 <Heart size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
                 <span className="group-hover:text-indigo-600 transition-colors">Wishlist</span>
@@ -104,7 +127,7 @@ export default function Navbar() {
                   {cartItemCount}
                 </span>
                 )}
-              </Link>
+ </Link> */}
             </div>
           </div>
 
@@ -166,9 +189,15 @@ export default function Navbar() {
                   <Link href="/delivery" className="py-3 border-b" onClick={toggleMobileMenu}>
                     Delivery
                   </Link>
-                  <Link href="/account" className="py-3 border-b" onClick={toggleMobileMenu}>
+                  <Link href="/login" className="py-3 border-b" onClick={toggleMobileMenu}>
+ Login
+ </Link>
+ <Link href="/signup" className="py-3 border-b" onClick={toggleMobileMenu}>
+ Sign Up
+ </Link>
+ {/* <Link href="/account" className="py-3 border-b" onClick={toggleMobileMenu}>
                     Account
-                  </Link>
+ </Link> */}
                   <Link href="/wishlist" className="py-3 border-b" onClick={toggleMobileMenu}>
                     Wishlist
                   </Link>
