@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const pool = require('../config/db'); // Import the database pool
+const jwt = require('jsonwebtoken'); // Import jsonwebtoken
 
 // Import PayPal SDK
 const paypal = require('@paypal/checkout-server-sdk');
