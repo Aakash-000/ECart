@@ -9,6 +9,28 @@ const paypal = require('@paypal/checkout-server-sdk');
 
 // Configure PayPal Client
 // Replace with your actual PayPal Client ID and Client Secret
+const jwtSecret = 'YOUR_SECRET_KEY'; // **Replace with a strong, securely stored secret key**
+
+// Middleware to authenticate JWT
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Extract token from "Bearer TOKEN" format
+
+  if (token == null) {
+    return res.sendStatus(401); // If there's no token, return 401 Unauthorized
+  }
+
+  jwt.verify(token, jwtSecret, (err, user) => {
+    if (err) {
+      return res.sendStatus(403); // If token is invalid, return 403 Forbidden
+    }
+    req.user = user; // Attach user information from token payload to request object
+    next(); // Proceed to the next middleware or route handler
+  });
+}
+
+
+
 const environment = new paypal.core.SandboxEnvironment('YOUR_PAYPAL_CLIENT_ID', 'YOUR_PAYPAL_CLIENT_SECRET');
 
 // Route to get all products
@@ -73,8 +95,13 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    // Passwords match, login successful (you'll typically generate a JWT here)
-    res.status(200).json({ message: 'Login successful.' });
+    // Passwords match, generate a JWT
+    const token = jwt.sign(
+      { userId: user.rows[0].id, email: user.rows[0].email }, // Include user ID and email in the payload
+      jwtSecret,
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
+    res.status(200).json({ message: 'Login successful.', token });
 
   } catch (err) {
     console.error('Error during login:', err);
