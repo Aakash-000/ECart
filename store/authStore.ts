@@ -1,6 +1,6 @@
-import create from 'zustand';
+import { create } from 'zustand';
 
-interface AuthState {
+export interface AuthState {
   token: string | null;
   user: any | null; // You can define a more specific user type
   setToken: (token: string | null) => void;
@@ -19,8 +19,7 @@ const useAuthStore = create<AuthState>((set) => ({
 
   login: (token, user) => {
     localStorage.setItem('jwtToken', token);
-    // You might want to store user info in local storage too,
-    // but be mindful of sensitive data.
+    // Consider storing user info in local storage only if it's not sensitive
     set({ token, user });
   },
 
@@ -32,14 +31,18 @@ const useAuthStore = create<AuthState>((set) => ({
 
   initializeAuthState: () => {
     const token = localStorage.getItem('jwtToken');
+    // const user = localStorage.getItem('userInfo'); // If you choose to store user info
     if (token) {
       // In a real application, you would typically verify the token on the server
       // and fetch user information based on the token here.
       // For this example, we'll just set the token.
       set({ token });
       // If user info was stored, retrieve it here too.
+      // if (user) {
+      //   set({ user: JSON.parse(user) });
+      // }
     }
   },
 }));
 
-export default useAuthStore;
+export { useAuthStore };

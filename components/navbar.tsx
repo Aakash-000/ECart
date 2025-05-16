@@ -90,30 +90,28 @@ export default function Navbar() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
- {token ? (
- <>
- <Link href="/account" className="flex items-center text-sm group">
- <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
- <span className="group-hover:text-indigo-600 transition-colors">Account</span>
- </Link>
- <button
- className="flex items-center text-sm group"
- onClick={logout}
- >
- <span className="group-hover:text-indigo-600 transition-colors">Logout</span>
- </button>
- </>
- ) : (
- <>
- <Link href="/login" className="flex items-center text-sm group">
- <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
- <span className="group-hover:text-indigo-600 transition-colors">Login</span>
- </Link>
- <Link href="/signup" className="flex items-center text-sm group">
- <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
- <span className="group-hover:text-indigo-600 transition-colors">Sign Up</span>
- </Link>
- )}
+              {token ? (
+                <>
+                  <Link href="/account" className="flex items-center text-sm group">
+                    <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
+                    <span className="group-hover:text-indigo-600 transition-colors">Account</span>
+                  </Link>
+                  <button className="flex items-center text-sm group" onClick={logout}>
+                    <span className="group-hover:text-indigo-600 transition-colors">Logout</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" className="flex items-center text-sm group">
+                    <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
+                    <span className="group-hover:text-indigo-600 transition-colors">Login</span>
+                  </Link>
+                  <Link href="/signup" className="flex items-center text-sm group">
+                    <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
+                    <span className="group-hover:text-indigo-600 transition-colors">Sign Up</span>
+                  </Link>
+                </>
+              )}
 
               <Link href="/wishlist" className="flex items-center text-sm group">
                 <Heart size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
@@ -127,7 +125,7 @@ export default function Navbar() {
                   {cartItemCount}
                 </span>
                 )}
- </Link> */}
+              </Link>
             </div>
           </div>
 
@@ -189,15 +187,22 @@ export default function Navbar() {
                   <Link href="/delivery" className="py-3 border-b" onClick={toggleMobileMenu}>
                     Delivery
                   </Link>
-                  <Link href="/login" className="py-3 border-b" onClick={toggleMobileMenu}>
- Login
- </Link>
- <Link href="/signup" className="py-3 border-b" onClick={toggleMobileMenu}>
- Sign Up
- </Link>
- {/* <Link href="/account" className="py-3 border-b" onClick={toggleMobileMenu}>
-                    Account
- </Link> */}
+                  {token ? ( // Conditionally render Logout or Login/Sign Up
+                    <button
+                      className="py-3 border-b text-left w-full"
+                      onClick={() => {
+                        logout();
+                        toggleMobileMenu();
+                      }}
+                    >
+                      <span className="font-medium">Logout</span>
+                    </button>
+                  ) : (
+                    <> {/* Render Login and Sign Up when not logged in */}
+                      <Link href="/login" className="py-3 border-b" onClick={toggleMobileMenu}>Login</Link>
+                      <Link href="/signup" className="py-3 border-b" onClick={toggleMobileMenu}>Sign Up</Link>
+                    </>
+                  )}
                   <Link href="/wishlist" className="py-3 border-b" onClick={toggleMobileMenu}>
                     Wishlist
                   </Link>

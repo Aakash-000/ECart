@@ -1,22 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const Redis = require('ioredis');
-const connectRedis = require('connect-redis');
-const apiRoutes = require('./routes/api'); // Import routes from ./routes/api
+const apiRoutes = require('./routes/api');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Configure Redis client
-const redisClient = new Redis();
-
-// Configure Redis store for sessions
-const RedisStore = connectRedis(session);
-
 // Configure session middleware
 app.use(session({
-  store: new RedisStore({ client: redisClient }),
   secret: 'your_session_secret', // Replace with a strong, unique secret
   resave: false,
   saveUninitialized: false,
@@ -34,8 +25,7 @@ app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
 
-// Use the imported API routes
-app.use('/api', apiRoutes); // Assuming your API routes are under '/api'
+app.use('/api', apiRoutes);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

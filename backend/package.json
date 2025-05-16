@@ -11,6 +11,8 @@
   "description": "",
   "dependencies": {
     "@paypal/checkout-server-sdk": "^1.0.3",
+    "ioredis": "^5.6.1",
+    "stripe": "latest",
     "bcrypt": "^6.0.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",

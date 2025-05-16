@@ -117,6 +117,7 @@ router.post('/logout', (req, res) => {
     }
     res.status(200).json({ message: 'Logout successful.' });
   });
+});
 
 router.post('/create-paypal-order', (req, res) => {
   // Create a request to create an order
