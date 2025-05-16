@@ -2,14 +2,12 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const pool = require('../config/db'); // Import the database pool
-
+const jwt = require('jsonwebtoken'); // Import jsonwebtoken
 // Import PayPal SDK
 const paypal = require('@paypal/checkout-server-sdk');
 
 // Configure PayPal Client
 // Replace with your actual PayPal Client ID and Client Secret
-const jwtSecret = 'YOUR_SECRET_KEY'; // **Replace with a strong, securely stored secret key**
- // This secret is no longer used for JWTs but might be needed for other purposes or can be removed if not.
 
 // Middleware to check if user is authenticated via session
 function isAuthenticated(req, res, next) {
@@ -22,15 +20,36 @@ function isAuthenticated(req, res, next) {
     return res.sendStatus(401); // If there's no token, return 401 Unauthorized
 
   }
+
   }
+
+// Middleware to verify JWT
+function verifyJWT(req, res, next) {
+  const token = req.cookies.token; // Get token from the 'token' cookie
+
+  if (!token) {
+    return res.sendStatus(401); // If there's no token, return 401 Unauthorized
+  }
+
+  const jwtSecret = process.env.JWT_SECRET || 'YOUR_DEFAULT_SECRET'; // Use environment variable or a default
+
+  jwt.verify(token, jwtSecret, (err, decoded) => {
+    if (err) {
+      return res.sendStatus(403); // If token is invalid, return 403 Forbidden
+    }
+    req.user = decoded; // Attach the decoded user information to the request object
+    next(); // Proceed to the next middleware or route handler
+  });
+}
+
 
 
 const environment = new paypal.core.SandboxEnvironment('YOUR_PAYPAL_CLIENT_ID', 'YOUR_PAYPAL_CLIENT_SECRET');
-
-// Route to get all products
-router.get('/products', async (req, res) => {
+ 
+// Route to get all products 
+router.get('/products', async (req, res) => { 
   try {
-    const result = await pool.query('SELECT * FROM products'); // Assuming you have a 'products' table
+    const result = await pool.query('SELECT * FROM products'); // Assuming you have a 'products' table 
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching products:', err);
@@ -38,18 +57,18 @@ router.get('/products', async (req, res) => {
   }
 });
 
-// Route for user signup
-router.post('/signup', async (req, res) => {
-  const { email, password } = req.body;
+// Route for user signup 
+router.post('/signup', async (req, res) => { 
+  const { email, password } = req.body; 
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
   }
 
   try {
-    // Check if user already exists
-    const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    if (existingUser.rows.length > 0) {
+    // Check if user already exists 
+    const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]); 
+    if (existingUser.rows.length > 0) { 
       return res.status(409).json({ error: 'User with this email already exists.' });
     }
 
@@ -57,14 +76,14 @@ router.post('/signup', async (req, res) => {
     const saltRounds = 10; // Recommended salt rounds for bcrypt
     const password_hash = await bcrypt.hash(password, saltRounds);
 
-    // Insert the new user into the database
-    await pool.query('INSERT INTO users (email, password_hash) VALUES ($1, $2)', [email, password_hash]);
+    // Insert the new user into the database 
+    await pool.query('INSERT INTO users (email, password_hash) VALUES ($1, $2)', [email, password_hash]); 
     res.status(201).json({ message: 'User registered successfully.' });
   } catch (err) {
     console.error('Error during signup:', err);
     res.status(500).json({ error: 'An error occurred during signup.' });
   }
-});
+}); 
 
 // Route for user login
 router.post('/login', async (req, res) => {
@@ -89,8 +108,20 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    // Passwords match, create a session for the user
-    req.session.user = { id: user.rows[0].id, email: user.rows[0].email };
+    // Passwords match, create a JWT
+    const jwtSecret = process.env.JWT_SECRET || 'YOUR_DEFAULT_SECRET'; // Use environment variable or a default
+    const token = jwt.sign(
+      { id: user.rows[0].id, email: user.rows[0].email },
+      jwtSecret,
+      { expiresIn: '1d' } // Token expires in 1 day
+    );
+
+    // Set the JWT in an HttpOnly, Secure, and SameSite cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Set to true in production
+      sameSite: 'Strict', // Or 'Lax' depending on your needs
+    });
     res.status(200).json({ message: 'Login successful.' });
   }  catch (err) {
     console.error('Error during login:', err);
@@ -101,22 +132,18 @@ router.post('/login', async (req, res) => {
 const client = new paypal.core.PayPalHttpClient(environment);
 
 
-router.get('/capture-paypal-order', isAuthenticated, (req, res) => {
+router.get('/capture-paypal-order', verifyJWT, (req, res) => {
   res.json({ message: 'capture-paypal-order route' });
 });
 
-router.post('/create-payment-intent', isAuthenticated, (req, res) => {
+router.post('/create-payment-intent', verifyJWT, (req, res) => {
   res.json({ message: 'create-payment-intent route' });
 });
 
 // Route for user logout
 router.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'An error occurred during logout.' });
-    }
-    res.status(200).json({ message: 'Logout successful.' });
-  });
+  res.clearCookie('token'); // Clear the 'token' cookie
+  res.status(200).json({ message: 'Logged out successfully' });
 });
 
 router.post('/create-paypal-order', (req, res) => {
@@ -153,6 +180,11 @@ router.post('/create-paypal-order', (req, res) => {
 
 router.post('/webhook', (req, res) => {
   res.json({ message: 'webhook route' });
+});
+
+// New route to check authentication status
+router.get('/authenticated', verifyJWT, (req, res) => {
+  res.status(200).json({ message: 'Authenticated', user: req.user });
 });
 
 module.exports = router;

@@ -13,7 +13,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
 
-  const { token, logout } = useAuthStore();
+  const { isAuthenticated, logout } = useAuthStore();
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen)
     if (searchOpen) setSearchOpen(false)
@@ -90,7 +90,7 @@ export default function Navbar() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
-              {token ? (
+              {isAuthenticated ? (
                 <>
                   <Link href="/account" className="flex items-center text-sm group">
                     <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
@@ -186,8 +186,7 @@ export default function Navbar() {
                   </Link>
                   <Link href="/delivery" className="py-3 border-b" onClick={toggleMobileMenu}>
                     Delivery
-                  </Link>
-                  {token ? ( // Conditionally render Logout or Login/Sign Up
+                  </Link>{isAuthenticated ? ( // Conditionally render Logout or Login/Sign Up
                     <button
                       className="py-3 border-b text-left w-full"
                       onClick={() => {

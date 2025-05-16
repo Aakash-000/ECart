@@ -31,18 +31,20 @@ export default function LoginPage() {
       throw new Error(error.error || "Login failed");
     }
 
-    return response.json();
+    const responseData = await response.json();
+ return responseData.token; // Assuming the token is returned in a 'token' field
   };
 
-  const { mutate, status } = useMutation({
+  const { mutate, status } = useMutation<string, Error, LoginFormData>({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      login(data.token, data.user); // Update your store with token and user info
+      // Removed localStorage token storage
       router.push("/"); // Redirect to a protected page or dashboard
  },
     onError: (error: any) => {
       toast({ title: "Login Failed", description: error.message, variant: "destructive" });
-    },
+    },  
+ 
   }); // Added closing brace here
 
   const onSubmit = (data: LoginFormData) => {

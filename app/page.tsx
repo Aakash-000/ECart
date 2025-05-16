@@ -2,10 +2,30 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import ProductCategories from "@/components/product-categories"
+import { useAuthStore } from "@/store/authStore"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 
 export default function Home() {
-  return (
-      <div className="container mx-auto px-4 py-6">
+  const router = useRouter()
+  const { isAuthenticated, isLoading, initializeAuthState } = useAuthStore()
+
+  useEffect(() => {
+    initializeAuthState();
+  }, [initializeAuthState]);
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login")
+    }
+  }, [isLoading, isAuthenticated, router])
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center min-h-screen">Loading...</div>
+  }
+
+  return isAuthenticated && (
+    <>
         {/* Hero Banner */}
         <div className="relative bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl mb-10 overflow-hidden">
           <div className="flex flex-col md:flex-row">
@@ -34,6 +54,8 @@ export default function Home() {
 
         {/* Product Categories Section */}
         <ProductCategories />
+
+        {/* Conditional rendering based on authentication */}
 
         {/* Featured Products Section */}
         <div className="mt-16">
@@ -83,7 +105,7 @@ export default function Home() {
                                       width="16"
                                       height="16"
                                       viewBox="0 0 24 24"
-                                      fill={i < product.rating ? "#FBBF24" : "none"}
+                                      fill={i < product?.rating ? "#FBBF24" : "none"}
                                       xmlns="http://www.w3.org/2000/svg"
                                   >
                                     <path
@@ -103,8 +125,19 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </div>
+      </>
   )
+}
+
+// Define the type for a featured product to include originalPrice
+interface FeaturedProduct {
+  id: number;
+  name: string;
+  price: string;
+  rating: number;
+  reviews: number;
+  image: string;
+  originalPrice?: string; // Make originalPrice optional
 }
 
 const featuredProducts = [
@@ -112,6 +145,7 @@ const featuredProducts = [
     id: 1,
     name: "Wireless Earbuds",
     price: "89.99",
+    originalPrice: "99.99",
     rating: 4,
     reviews: 121,
     image: "/images/products/wireless-earbuds.png",
@@ -120,15 +154,17 @@ const featuredProducts = [
     id: 2,
     name: "Airpods Max",
     price: "549.00",
+    originalPrice: "200",
     rating: 5,
     reviews: 89,
     image: "/images/products/airpods-max.png",
   },
   {
-    id: 3,
-    name: "Bose Headphones",
-    price: "289.99",
-    rating: 4,
+    id: 3, // 🆕 changed from 4
+    name: "VIVEFOX Headphones",
+    price: "39.99",
+    originalPrice: "49.99",
+    rating: 4, // ✅ added missing rating
     reviews: 56,
     image: "/images/products/bose-headphones.png",
   },
@@ -136,8 +172,10 @@ const featuredProducts = [
     id: 4,
     name: "VIVEFOX Headphones",
     price: "39.99",
+    originalPrice: "49.99",
     rating: 3,
     reviews: 42,
     image: "/images/products/vivefox-headphones.png",
   },
 ]
+

@@ -1,47 +1,44 @@
 import { create } from 'zustand';
 
 export interface AuthState {
-  token: string | null;
-  user: any | null; // You can define a more specific user type
-  setToken: (token: string | null) => void;
-  setUser: (user: any | null) => void;
-  login: (token: string, user: any) => void;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: () => Promise<void>;
   logout: () => void;
-  initializeAuthState: () => void;
+  checkAuth: () => Promise<void>;
+  initializeAuthState: () => Promise<void>;
 }
 
-const useAuthStore = create<AuthState>((set) => ({
-  token: null,
-  user: null,
+const useAuthStore = create<AuthState>((set, get) => ({
+  isAuthenticated: false,
+  isLoading: true,
 
-  setToken: (token) => set({ token }),
-  setUser: (user) => set({ user }),
-
-  login: (token, user) => {
-    localStorage.setItem('jwtToken', token);
-    // Consider storing user info in local storage only if it's not sensitive
-    set({ token, user });
-  },
-
-  logout: () => {
-    localStorage.removeItem('jwtToken');
-    // Remove user info from local storage if stored
-    set({ token: null, user: null });
-  },
-
-  initializeAuthState: () => {
-    const token = localStorage.getItem('jwtToken');
-    // const user = localStorage.getItem('userInfo'); // If you choose to store user info
-    if (token) {
-      // In a real application, you would typically verify the token on the server
-      // and fetch user information based on the token here.
-      // For this example, we'll just set the token.
-      set({ token });
-      // If user info was stored, retrieve it here too.
-      // if (user) {
-      //   set({ user: JSON.parse(user) });
-      // }
+  checkAuth: async () => {
+    try {
+      const response = await fetch('/api/authenticated'); // Or any protected route
+      if (response.ok) {
+        set({ isAuthenticated: true, isLoading: false });
+      } else {
+        set({ isAuthenticated: false, isLoading: false });
+      }
+    } catch (error) {
+      console.error('Error checking authentication:', error);
+      set({ isAuthenticated: false, isLoading: false });
     }
+  },
+
+  login: async () => {
+    // Assuming the backend sets the cookie on successful login response
+    await get().checkAuth();
+  },
+
+  logout: async () => {
+    await fetch('/api/logout', { method: 'POST' });
+    set({ isAuthenticated: false });
+  },
+
+  initializeAuthState: async () => {
+    await get().checkAuth();
   },
 }));
 
