@@ -39,6 +39,7 @@ export default function LoginPage() {
     mutationFn: loginUser,
     onSuccess: (data) => {
       // Removed localStorage token storage
+      login(); // Call login action from auth store
       router.push("/"); // Redirect to a protected page or dashboard
  },
     onError: (error: any) => {

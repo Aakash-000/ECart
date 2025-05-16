@@ -6,6 +6,7 @@ import { Search, ShoppingCart, ChevronDown, Phone, User, Heart, Menu, X } from "
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/context/cart-context"
 import { useAuthStore } from "@/store/authStore"
+import { useRouter } from "next/router"
 
 export default function Navbar() {
   const { state } = useCart()
@@ -14,6 +15,7 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false)
 
   const { isAuthenticated, logout } = useAuthStore();
+  const router = useRouter()
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen)
     if (searchOpen) setSearchOpen(false)
@@ -97,8 +99,10 @@ export default function Navbar() {
                     <span className="group-hover:text-indigo-600 transition-colors">Account</span>
                   </Link>
                   <button className="flex items-center text-sm group" onClick={logout}>
-                    <span className="group-hover:text-indigo-600 transition-colors">Logout</span>
-                  </button>
+                  <span
+                      className="group-hover:text-indigo-600 transition-colors"
+                      onClick={() => { logout(); router.push('/login'); }} // Add redirect here
+                    >Logout</span>                  </button>
                 </>
               ) : (
                 <>
@@ -190,8 +194,9 @@ export default function Navbar() {
                     <button
                       className="py-3 border-b text-left w-full"
                       onClick={() => {
-                        logout();
-                        toggleMobileMenu();
+                        logout()
+                        toggleMobileMenu()
+                        router.push('/login') 
                       }}
                     >
                       <span className="font-medium">Logout</span>
