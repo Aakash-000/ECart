@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const apiRoutes = require('./routes/api');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -19,6 +20,9 @@ app.use(bodyParser.json());
 
 // Middleware to parse URL-encoded requests
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Middleware to parse cookies
+app.use(cookieParser());
 
 // Use cors middleware
 app.use(cors({
