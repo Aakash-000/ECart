@@ -1,24 +1,28 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import ProductCategories from "@/components/product-categories"
 import { useAuthStore } from "@/store/authStore"
-import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 export default function Home() {
-  const router = useRouter()
+  const router = useRouter();
   const { isAuthenticated, isLoading, initializeAuthState } = useAuthStore()
 
   useEffect(() => {
+    console.log("Initializing auth...");
     initializeAuthState();
   }, [initializeAuthState]);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push("/login")
+    console.log("isLoading:", isLoading, "isAuthenticated:", isAuthenticated);
+    if (!isLoading && !isAuthenticated && window.location.pathname !== "/login") {
+      router.push("/login");
     }
-  }, [isLoading, isAuthenticated, router])
+  }, [isLoading, isAuthenticated, router]);
 
   if (isLoading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>
