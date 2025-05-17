@@ -6,7 +6,7 @@ import { Search, ShoppingCart, ChevronDown, Phone, User, Heart, Menu, X } from "
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/context/cart-context"
 import { useAuthStore } from "@/store/authStore"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 
 export default function Navbar() {
   const { state } = useCart()
@@ -15,7 +15,7 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false)
 
   const { isAuthenticated, logout } = useAuthStore();
-  const router = useRouter()
+  const router = useRouter();
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen)
     if (searchOpen) setSearchOpen(false)

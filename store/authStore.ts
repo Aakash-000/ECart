@@ -15,7 +15,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
   checkAuth: async () => {
     try {
-      const response = await fetch('/api/authenticated'); // Or any protected route
+      const response = await fetch('http://localhost:3000/api/authenticated'); // Or any protected route
       if (response.ok) {
         set({ isAuthenticated: true, isLoading: false });
       } else {
