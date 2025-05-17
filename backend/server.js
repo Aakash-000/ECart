@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const apiRoutes = require('./routes/api');
-
+const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -19,6 +19,12 @@ app.use(bodyParser.json());
 
 // Middleware to parse URL-encoded requests
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Use cors middleware
+app.use(cors({
+  origin: 'http://localhost:3001', // Allow requests from your frontend's origin
+  credentials: true // Allow cookies to be sent with the request
+}));
 
 // Basic route for the root URL
 app.get('/', (req, res) => {
