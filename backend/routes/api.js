@@ -6,22 +6,6 @@ const jwt = require('jsonwebtoken'); // Import jsonwebtoken
 // Import PayPal SDK
 const paypal = require('@paypal/checkout-server-sdk');
 
-// Configure PayPal Client
-// Replace with your actual PayPal Client ID and Client Secret
-
-// Middleware to check if user is authenticated via session
-function isAuthenticated(req, res, next) {
-  if (req.session && req.session.user) {
-    // User is authenticated, proceed to the next middleware or route handler
-    return next();
-  }
- else {
-    // User is not authenticated, return 401 Unauthorized
-    return res.sendStatus(401); // If there's no token, return 401 Unauthorized
-
-  }
-
-  }
 
 // Middleware to verify JWT
 function verifyJWT(req, res, next) {
@@ -44,19 +28,9 @@ function verifyJWT(req, res, next) {
 
 
 
-const environment = new paypal.core.SandboxEnvironment('YOUR_PAYPAL_CLIENT_ID', 'YOUR_PAYPAL_CLIENT_SECRET');
+const environment = new paypal.core.SandboxEnvironment(process.env.PAYPAL_CLIENT_ID, process.env.PAYPAL_CLIENT_SECRET);
+const client = new paypal.core.PayPalHttpClient(environment);
  
-// Route to get all products 
-router.get('/products', async (req, res) => { 
-  try {
-    const result = await pool.query('SELECT * FROM products'); // Assuming you have a 'products' table 
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Error fetching products:', err);
-    res.status(500).json({ error: 'An error occurred while fetching products.' });
-  }
-});
-
 // Route for user signup 
 router.post('/signup', async (req, res) => { 
   const { email, password } = req.body; 
@@ -129,26 +103,9 @@ router.post('/login', async (req, res) => {
   }
 });
 
-const client = new paypal.core.PayPalHttpClient(environment);
 
-
-router.get('/capture-paypal-order', verifyJWT, (req, res) => {
-  res.json({ message: 'capture-paypal-order route' });
-});
-
-router.post('/create-payment-intent', verifyJWT, (req, res) => {
-  res.json({ message: 'create-payment-intent route' });
-});
-
-// Route for user logout
-router.post('/logout', (req, res) => {
-  res.clearCookie('token'); // Clear the 'token' cookie
-  res.status(200).json({ message: 'Logged out successfully' });
-});
-
-router.post('/create-paypal-order', (req, res) => {
-  // Create a request to create an order
-  const request = new paypal.orders.OrdersCreateRequest();
+const createPaypalOrder = (req, res) => {
+  const request = new paypal.orders.OrdersCreateRequest(); 
   request.prefer("return=representation");
   request.requestBody({
     intent: 'CAPTURE',
@@ -175,16 +132,32 @@ router.post('/create-paypal-order', (req, res) => {
   }).catch(err => {
     console.error(err);
     res.status(500).send('Error creating PayPal order');
-  });
 });
+};
+
 
 router.post('/webhook', (req, res) => {
   res.json({ message: 'webhook route' });
 });
 
-// New route to check authentication status
-router.get('/authenticated', verifyJWT, (req, res) => {
+
+// Create a separate router for authenticated routes
+const authenticatedRouter = express.Router();
+
+// Apply the verifyJWT middleware to the authenticated router
+authenticatedRouter.use(verifyJWT);
+
+// Add authenticated routes to the authenticated router
+authenticatedRouter.get('/authenticated', (req, res) => {
   res.status(200).json({ message: 'Authenticated', user: req.user });
 });
 
-module.exports = router;
+authenticatedRouter.get('/capture-paypal-order', (req, res) => {
+  res.json({ message: 'capture-paypal-order route' });
+});
+
+authenticatedRouter.post('/create-payment-intent', (req, res) => {
+  res.json({ message: 'create-payment-intent route' });
+});
+
+module.exports = { router, authenticatedRouter };
