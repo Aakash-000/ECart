@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react"
 import { useCart } from "@/context/cart-context"
+import { useAuthStore } from "@/store/authStore"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 interface RecommendedProduct {
   id: number
@@ -16,8 +19,18 @@ interface RecommendedProduct {
 
 export default function CartPage() {
   const { state, removeFromCart, updateQuantity, clearCart } = useCart()
+  const { isAuthenticated, isLoading } = useAuthStore()
+  const router = useRouter()
   const { items, subtotal, discount, shipping, tax, total } = state
 
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      // Check if the current path is already /login to avoid infinite redirects
+      if (window.location.pathname !== "/login") {
+        router.push("/login")
+      }
+    }
+  }, [isLoading, isAuthenticated, router])
 
   const recommendedProducts: RecommendedProduct[] = [
     {
@@ -56,6 +69,10 @@ export default function CartPage() {
 
   const handleClearCart = () => {
     clearCart()
+  }
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center min-h-screen">Loading cart...</div>
   }
 
   return (
