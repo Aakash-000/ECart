@@ -104,8 +104,8 @@ export default function Navbar() {
 
       {/* Desktop Navigation */}
       <div className="hidden md:flex items-center space-x-6">
-        {isAuthenticated ? (
-          isLoading ? (
+        {isAuthenticated ? (isLoading ? (
+
             <span className="text-sm">Loading...</span>
           ) : (
             <>
