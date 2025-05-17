@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const pool = require('../config/db'); // Import the database pool
 const jwt = require('jsonwebtoken'); // Import jsonwebtoken
+const authenticatedRouter = express.Router(); // Create a separate router for authenticated routes
 // Import PayPal SDK
 const paypal = require('@paypal/checkout-server-sdk');
 
@@ -45,6 +46,9 @@ function verifyJWT(req, res, next) {
 
 
 const environment = new paypal.core.SandboxEnvironment('YOUR_PAYPAL_CLIENT_ID', 'YOUR_PAYPAL_CLIENT_SECRET');
+
+// Apply verifyJWT middleware to the authenticated router
+authenticatedRouter.use(verifyJWT);
  
 // Route to get all products 
 router.get('/products', async (req, res) => { 
@@ -132,14 +136,13 @@ router.post('/login', async (req, res) => {
 const client = new paypal.core.PayPalHttpClient(environment);
 
 
-router.get('/capture-paypal-order', verifyJWT, (req, res) => {
+authenticatedRouter.get('/capture-paypal-order', (req, res) => {
   res.json({ message: 'capture-paypal-order route' });
 });
 
-router.post('/create-payment-intent', verifyJWT, (req, res) => {
+authenticatedRouter.post('/create-payment-intent', (req, res) => {
   res.json({ message: 'create-payment-intent route' });
 });
-
 // Route for user logout
 router.post('/logout', (req, res) => {
   res.clearCookie('token'); // Clear the 'token' cookie
@@ -184,8 +187,11 @@ router.post('/webhook', (req, res) => {
 });
 
 // New route to check authentication status
-router.get('/authenticated', verifyJWT, (req, res) => {
+authenticatedRouter.get('/authenticated', (req, res) => {
   res.status(200).json({ message: 'Authenticated', user: req.user });
 });
+
+// Mount the authenticated router
+router.use('/authenticated', authenticatedRouter);
 
 module.exports = router;
