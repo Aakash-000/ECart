@@ -144,6 +144,10 @@ authenticatedRouter.post('/create-payment-intent', (req, res) => {
   res.json({ message: 'create-payment-intent route' });
 });
 // Route for user logout
+// New route to get authenticated user data
+authenticatedRouter.get('/user', (req, res) => {
+  res.status(200).json({ user: req.user });
+});
 router.post('/logout', (req, res) => {
   res.clearCookie('token'); // Clear the 'token' cookie
   res.status(200).json({ message: 'Logged out successfully' });
