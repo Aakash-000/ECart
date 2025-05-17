@@ -196,6 +196,6 @@ authenticatedRouter.get('/authenticated', (req, res) => {
 });
 
 // Mount the authenticated router
-router.use('/authenticated', authenticatedRouter);
+router.use('/', authenticatedRouter);
 
 module.exports = router;
