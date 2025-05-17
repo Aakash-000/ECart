@@ -123,7 +123,7 @@ router.post('/login', async (req, res) => {
     // Set the JWT in an HttpOnly, Secure, and SameSite cookie
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Set to true in production
+ secure: process.env.NODE_ENV === 'production' && process.env.HTTPS === 'true', // Set to true only in production with HTTPS
       sameSite: 'Strict', // Or 'Lax' depending on your needs
     });
     res.status(200).json({ message: 'Login successful.' });
