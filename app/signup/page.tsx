@@ -21,7 +21,7 @@ export default function SignupPage() {
   };
 
   const createUser = async (data: SignupFormInputs) => {
-    const response = await fetch(`${process.env.BASE_URL}/api/signup`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

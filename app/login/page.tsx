@@ -18,7 +18,7 @@ export default function LoginPage() {
   const { toast } = useToast();
 
   const loginUser = async (data: LoginFormData) => {
-    const response = await fetch(`${process.env.BASE_URL}/api/login`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
