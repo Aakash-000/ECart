@@ -1,41 +1,28 @@
-import React, { useEffect } from 'react';
-import { useProductStore } from '../store/productStore';
+import React from 'react';
 import { Product } from '../types/product';
-import { useAuthStore } from '@/store/authStore'; // Assuming authStore is in @/store
+import { useQuery } from '@tanstack/react-query';
 
 const ProductList: React.FC = () => {
-  const { products, setProducts } = useProductStore((state) => ({
-    products: state.products,
-    setProducts: state.setProducts,
-  }));
-  const { user } = useAuthStore(); // Access the user object which might contain the token
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      if (!user || !user.token) {
-        console.error("User not authenticated or token not available.");
-        // Optionally set an error state or display a message
-        return;
+  const { data: products, isLoading, isError, error } = useQuery<Product[], Error>({
+    queryKey: ['products'],
+    queryFn: async () => {
+      // Note: Authentication should be handled in an API interceptor or similar mechanism
+      // for better separation of concerns and reusability.
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products`); // Use relative path if within the same origin
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
       }
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`, {
-          headers: {
-            'Authorization': `Bearer ${user.token}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data: Product[] = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        // Optionally set an error state or display an error message to the user
-      }
-    };
+      return response.json();
+    },
+  });
 
-    fetchProducts();
-  }, [user, setProducts]); // Refetch if user changes or setProducts changes
+  if (isLoading) {
+    return <div>Loading products...</div>;
+  }
+
+  if (isError) {
+    return <div>Error fetching products: {error.message}</div>;
+  }
 
   return (
     <div>

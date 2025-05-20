@@ -1,9 +1,26 @@
+"use client";
+
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, SlidersHorizontal } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { Product } from "@/types/product";
+
+const fetchProducts = async (): Promise<Product[]> => {
+  const res = await fetch('/api/products');
+  if (!res.ok) {
+    throw new Error('Failed to fetch products');
+  }
+  return res.json();
+};
 
 export default function ProductsPage() {
+  const { data: products, isLoading, isError, error } = useQuery<Product[]>({
+    queryKey: ['products'],
+    queryFn: fetchProducts,
+  });
   return (
       <div className="container mx-auto px-4 py-6">
         <h1 className="text-2xl font-bold mb-6">Headphones For You!</h1>
@@ -45,6 +62,15 @@ export default function ProductsPage() {
           </div>
         </div>
 
+        {isLoading && <div className="text-center">Loading products...</div>}
+        {isError && <div className="text-center text-red-500">Error: {error.message}</div>}
+
+        {!isLoading && !isError && (!products || products.length === 0) && (
+            <div className="text-center">No products found.</div>
+        )}
+
+
+        {!isLoading && !isError && products && products.length > 0 && (
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (
@@ -105,81 +131,7 @@ export default function ProductsPage() {
               </Link>
           ))}
         </div>
+        )}
       </div>
   )
 }
-
-const products = [
-  {
-    id: 1,
-    name: "Wireless Earbuds, IPX8",
-    price: "89.99",
-    description: "Waterproof, Wireless earbuds",
-    rating: 4,
-    reviews: 121,
-    image: "/images/products/wireless-earbuds.png",
-  },
-  {
-    id: 2,
-    name: "Airpods Max",
-    price: "549.00",
-    description: "Experience the magic of high-fidelity audio",
-    rating: 5,
-    reviews: 89,
-    image: "/images/products/airpods-max.png",
-  },
-  {
-    id: 3,
-    name: "Bose Headphones",
-    price: "289.99",
-    description: "Enjoy premium, comfort, balanced sound experience",
-    rating: 4,
-    reviews: 56,
-    image: "/images/products/bose-headphones.png",
-  },
-  {
-    id: 4,
-    name: "VIVEFOX Headphones",
-    price: "39.99",
-    description: "Wired Bass Headphones With Mic",
-    rating: 3,
-    reviews: 42,
-    image: "/images/products/vivefox-headphones.png",
-  },
-  {
-    id: 5,
-    name: "JBL TUNE 660BTNC",
-    price: "99.99",
-    description: "Premium Sound Cancellation Wireless Bluetooth",
-    rating: 4,
-    reviews: 112,
-    image: "/images/products/jbl-headphones.png",
-  },
-  {
-    id: 6,
-    name: "TAGRY Bluetooth",
-    price: "109.99",
-    description: "TWS Earbuds IPX8 LED",
-    rating: 4,
-    reviews: 78,
-    image: "/images/products/tagry-earbuds.png",
-  },
-  {
-    id: 7,
-    name: "Monster MNFLEX",
-    price: "89.99",
-    description: "Flex Active Noise Cancelling Bluetooth",
-    rating: 3,
-    reviews: 45,
-    image: "/images/products/monster-headphones.png",
-  },
-  {
-    id: 8,
-    name: "Mpow CH6",
-    price: "59.99",
-    description: "Kids Headphones",
-    rating: 4,
-    reviews: 98,
-    image: "/images/products/mpow-headphones.png",
-  },
-]

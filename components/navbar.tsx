@@ -14,16 +14,8 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
 
-  const { isAuthenticated, logout } = useAuthStore();
-  const { data: user, isLoading } = useQuery({
-    queryKey: ['user'],
-    queryFn: async () => {
-      const response = await fetch('/api/user');
-      if (!response.ok) {
-        throw new Error('Failed to fetch user data');
-      }
-      return response.json();
-    }, enabled: isAuthenticated})
+  const { isAuthenticated,isLoading, logout,user } = useAuthStore();
+
   const router = useRouter();
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen)
@@ -111,7 +103,7 @@ export default function Navbar() {
             <>
               <Link href="/account" className="flex items-center text-sm group">
                 <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
-                <span className="group-hover:text-indigo-600 transition-colors">{user?.email}</span>
+                <span className="group-hover:text-indigo-600 transition-colors">{user?.user.email.substring(0,5)}</span>
               </Link>
               <button
                 className="flex items-center text-sm group"
