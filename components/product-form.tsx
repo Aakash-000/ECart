@@ -17,8 +17,8 @@ const productFormSchema = z.object({
   category_id: z.string().optional(), // Assuming category_id will be handled as a string input for now
   brand: z.string().optional(),
   weight: z.number().optional(),
-  dimensions: z.string().optional(),
-  image: z.string().optional(), // Assuming image is a URL or path
+  dimensions: z.string().optional(), // Allow both string or number
+ image: z.instanceof(FileList).optional(), // Assuming image is a file
 });
 
 type ProductFormInputs = z.infer<typeof productFormSchema>;
@@ -33,14 +33,15 @@ const ProductForm = () => {
 
   const addProductMutation = useMutation({
     mutationFn: async (newProduct: ProductFormInputs) => {
-      const response = await fetch('/api/products', {
+      const formData = new FormData();
+      Object.entries(newProduct).forEach(([key, value]) => {
+        formData.append(key, value as any);
+      });
+      const response = await fetch('/api/products/upload', { // Assuming a dedicated upload endpoint
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          // Add authorization header if your API requires it
-          // 'Authorization': `Bearer ${user?.token}`,
-        },
-        body: JSON.stringify(newProduct),
+          // 'Authorization': `Bearer ${user?.token}`, // Add authorization header if needed
+        }, body: formData,
       })
       if (!response.ok) {
         throw new Error('Failed to add product')
@@ -145,15 +146,15 @@ const ProductForm = () => {
         {errors.weight && <p className="text-red-500 text-sm mt-1">{errors.weight.message}</p>}
       </div>
 
-      {/* Image URL */}
+      {/* Image Upload */}
       <div>
         <label htmlFor="image" className="block text-sm font-medium text-gray-700">
-          Image URL
+          Product Image
         </label>
         <input
           id="image"
-          type="text"
-          {...register('image')}
+          type="file"
+          {...register('image', { required: false })}
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
         {errors.image && <p className="text-red-500 text-sm mt-1">{errors.image.message}</p>}

@@ -5,6 +5,9 @@ const pool = require('../config/db'); // Import the database pool
 const jwt = require('jsonwebtoken'); // Import jsonwebtoken
 const authenticatedRouter = express.Router(); // Create a separate router for authenticated routes
 // Import PayPal SDK
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const paypal = require('@paypal/checkout-server-sdk');
 
 // Configure PayPal Client
@@ -23,6 +26,25 @@ function isAuthenticated(req, res, next) {
   }
 
   }
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, '../uploads/images'); // Define your upload directory
+    // Create the upload directory if it doesn't exist
+    fs.mkdir(uploadPath, { recursive: true }, (err) => {
+      if (err) {
+        console.error('Error creating upload directory:', err);
+        return cb(err, ''); // Pass error to multer
+      }
+      cb(null, uploadPath);
+    });
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+const upload = multer({ storage });
 
 // Middleware to verify JWT
 function verifyJWT(req, res, next) {
@@ -118,6 +140,46 @@ router.post('/login', async (req, res) => {
   }  catch (err) {
     console.error('Error during login:', err);
     res.status(500).json({ error: 'An error occurred during login.' });
+  }
+});
+
+// Route to add a new product with image upload
+authenticatedRouter.post('/products', upload.single('image'), async (req, res) => {
+  const { name, description, price, sku, category_id, brand, weight, dimensions } = req.body;
+
+  if (!req.file) {
+    return res.status(400).json({ error: 'No image file uploaded.' });
+  }
+
+  const imagePath = req.file.path; // Path where multer saved the image
+
+  try {
+    // Start a transaction
+    await pool.query('BEGIN');
+
+    // Insert product details into the products table
+    const productResult = await pool.query(
+      'INSERT INTO products (name, description, price, sku, category_id, brand, weight, dimensions) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
+      [name, description, price, sku, category_id, brand, weight, dimensions]
+    );
+
+    const newProductId = productResult.rows[0].id;
+
+    // Insert image path into the product_images table
+    await pool.query(
+      'INSERT INTO product_images (product_id, image_url, alt_text, order_num) VALUES ($1, $2, $3, $4)',
+      [newProductId, imagePath, name, 0] // Using product name as alt_text, default order_num 0
+    );
+
+    // Commit the transaction
+    await pool.query('COMMIT');
+
+    res.status(201).json({ message: 'Product added successfully!', productId: newProductId, imagePath: imagePath });
+  } catch (err) {
+    // Rollback the transaction in case of error
+    await pool.query('ROLLBACK');
+    console.error('Error adding product with image:', err);
+    res.status(500).json({ error: 'An error occurred while adding the product.', details: err.message });
   }
 });
 

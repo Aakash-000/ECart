@@ -18,6 +18,7 @@
     "express-session": "^1.18.1",
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.0",
     "pg": "^8.15.6",
     "stripe": "latest"
   }
