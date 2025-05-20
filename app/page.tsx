@@ -6,6 +6,7 @@ import Image from "next/image"
 import ProductCategories from "@/components/product-categories"
 import { useAuthStore } from "@/store/authStore"
 import { useEffect } from "react"
+import ProductList from "@/components/product-list"
 import { useRouter } from "next/navigation"
 
 export default function Home() {
@@ -58,6 +59,12 @@ export default function Home() {
 
         {/* Product Categories Section */}
         <ProductCategories />
+
+        {/* All Products Section */}
+        <div className="mt-16">
+          <h2 className="section-title mb-8">All Products</h2>
+          <ProductList />
+        </div>
 
         {/* Conditional rendering based on authentication */}
 

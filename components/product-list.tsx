@@ -1,6 +1,7 @@
 import React from 'react';
 import { Product } from '../types/product';
 import { useQuery } from '@tanstack/react-query';
+import Image from 'next/image';
 
 const ProductList: React.FC = () => {
   const { data: products, isLoading, isError, error } = useQuery<Product[], Error>({
@@ -25,20 +26,29 @@ const ProductList: React.FC = () => {
   }
 
   return (
-    <div>
-      <h2>Product List</h2>
+    <div className="container mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold mb-6">Products</h2>
       {products.length === 0 ? (
         <p>No products added yet.</p>
       ) : (
-        <ul>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product: Product) => (
-            <li key={product.id}>
-              <h3>{product.name}</h3>
-              <p>Price: ${product.price}</p>
-              <p>Description: {product.description}</p>
+            <li key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="relative h-48 w-full">
+                <Image
+                  src={product.image_url || '/placeholder.jpg'} // Use a placeholder if no image_url
+                  alt={product.name}
+                  layout="fill"
+                  objectFit="cover"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
+                <p className="text-gray-700">${product.price.toFixed(2)}</p>
+              </div>
             </li>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

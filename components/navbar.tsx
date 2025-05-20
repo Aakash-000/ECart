@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { useCart } from "@/context/cart-context"
 import { useAuthStore } from "@/store/authStore"
 import { useRouter } from "next/navigation"
-import { useQuery } from "@tanstack/react-query"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+
 export default function Navbar() {
   const { state } = useCart()
   const cartItemCount = state.items.reduce((total, item) => total + item.quantity, 0)
@@ -102,10 +103,17 @@ export default function Navbar() {
           ) : (
             <>
               <Link href="/account" className="flex items-center text-sm group">
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center text-sm group">
                 <User size={20} className="mr-2 group-hover:text-indigo-600 transition-colors" />
                 <span className="group-hover:text-indigo-600 transition-colors">{user?.user.email.substring(0,5)}</span>
-              </Link>
-              <button
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem><Link href="/admin/add-product">Add Product</Link></DropdownMenuItem>
+                </DropdownMenuContent>
+                </DropdownMenu>
+               </Link>
+               <button
                 className="flex items-center text-sm group"
                 onClick={() => {
                   logout();
