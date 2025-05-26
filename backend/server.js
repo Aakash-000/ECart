@@ -33,6 +33,8 @@ app.use(cors({
 
 connectDB();
 
+app.use('/api', apiRoutes);
+
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
