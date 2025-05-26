@@ -20,7 +20,6 @@ const environment = new paypal.core.SandboxEnvironment('YOUR_PAYPAL_CLIENT_ID', 
 
 // Apply verifyJWT middleware to the authenticated router
 authenticatedRouter.use(verifyJWT);
-router.post('/signup', UserController.signup);
 router.post('/login', UserController.login);
 
 // Product routes
@@ -155,4 +154,5 @@ authenticatedRouter.get('/authenticated', (req, res) => {
 // Mount the authenticated router
 router.use('/', authenticatedRouter);
 
+router.post('/signup', UserController.signup);
 module.exports = router;
