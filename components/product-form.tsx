@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useForm } from 'react-hook-form'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
