@@ -75,6 +75,8 @@ authenticatedRouter.post('/create-payment-intent', (req, res) => {
 authenticatedRouter.get('/user', (req, res) => {
   res.status(200).json({ user: req.user });
 });
+
+router.post('/login', UserController.loginUser);
 router.post('/logout', (req, res) => {
   res.clearCookie('token'); // Clear the 'token' cookie
   res.status(200).json({ message: 'Logged out successfully' });
