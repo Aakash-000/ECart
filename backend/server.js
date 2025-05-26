@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const apiRoutes = require('./routes/api');
-const connectDB = require('./config/db');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const app = express();
@@ -31,6 +30,7 @@ app.use(cors({
   credentials: true // Allow cookies to be sent with the request
 }));
 
+const { connectDB } = require('./config/db');
 connectDB();
 
 app.use('/api', apiRoutes);
