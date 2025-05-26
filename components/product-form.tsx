@@ -18,7 +18,14 @@ const productFormSchema = z.object({
   brand: z.string().optional(),
   weight: z.number().optional(),
   dimensions: z.string().optional(), // Allow both string or number
- image: z.instanceof(FileList).optional(), // Assuming image is a file
+ image: z.any().transform((val) => {
+   if (typeof FileList !== "undefined" && val instanceof FileList) {
+     return Array.from(val);
+   }
+   return [];
+ })
+ .optional()
+, // Assuming image is a file
 });
 
 type ProductFormInputs = z.infer<typeof productFormSchema>;
