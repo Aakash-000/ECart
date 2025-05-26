@@ -8,7 +8,6 @@ const authenticatedRouter = express.Router(); // Create a separate router for au
 const { upload } = require('../middleware/uploadMiddleware');
 const paypal = require('@paypal/checkout-server-sdk');
 const { isAuthenticated, verifyJWT } = require('../middleware/authMiddleware');
-const { getPlaceholderData } = require('../controllers/placeholderController');
 const UserController = require('../controllers/userController');
 const ProductController = require('../controllers/productController');
 const  CategoryController  = require('../controllers/categoryController');
