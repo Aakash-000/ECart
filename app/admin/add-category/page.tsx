@@ -14,7 +14,7 @@ interface Category {
 }
 
 async function fetchCategories(): Promise<Category[]> {
-  const res = await fetch('/api/categories');
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/categories`,{method:"GET",credentials:"include"});
   if (!res.ok) {
     throw new Error('Failed to fetch categories');
   }
@@ -22,12 +22,13 @@ async function fetchCategories(): Promise<Category[]> {
 }
 
 async function createCategory(data: { name: string; parent_id: number | null }) {
-  const res = await fetch('/api/categories', {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/categories`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
+    credentials:"include"
   });
   if (!res.ok) {
     throw new Error('Failed to add category');
