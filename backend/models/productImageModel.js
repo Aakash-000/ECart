@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const {pool} = require('../config/db');
 
 const ProductImageModel = {
   createProductImage: async (product_id, image_url, alt_text, order_num) => {
