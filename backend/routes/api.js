@@ -20,8 +20,6 @@ const environment = new paypal.core.SandboxEnvironment('YOUR_PAYPAL_CLIENT_ID', 
 
 // Apply verifyJWT middleware to the authenticated router
 authenticatedRouter.use(verifyJWT);
-debugger;
-router.post('/login', UserController.login);
 
 // Product routes
 authenticatedRouter.get('/products', ProductController.getAllProducts);
@@ -29,37 +27,10 @@ authenticatedRouter.get('/products/:id', ProductController.getProductById);
 authenticatedRouter.post('/products', upload.single('image'), ProductController.createProduct);
 
 // Route to add a new category
-authenticatedRouter.post('/categories', async (req, res) => {
-  const { name, parent_id } = req.body;
-
-  if (!name) {
-    return res.status(400).json({ error: 'Category name is required.' });
-  }
-
-  try {
-    const result = await pool.query(
-      'INSERT INTO categories (name, parent_id) VALUES ($1, $2) RETURNING *',
-      [name, parent_id || null] // Use null for parent_id if not provided
-    );
-    res.status(201).json(result.rows[0]);
-  } catch (err) {
-    console.error('Error adding category:', err);
-    res.status(500).json({ error: 'An error occurred while adding the category.' });
-  }
-});
+authenticatedRouter.post('/categories', CategoryController.createCategory);
 
 // Route to get all categories
-authenticatedRouter.get('/categories', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM categories ORDER BY name');
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Error fetching categories:', err);
-    res.status(500).json({ error: 'An error occurred while fetching categories.' });
-  }
-});
-
-
+authenticatedRouter.get('/categories', CategoryController.getAllCategories);
 
 
 
