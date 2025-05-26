@@ -9,7 +9,7 @@ const ProductList: React.FC = () => {
     queryFn: async () => {
       // Note: Authentication should be handled in an API interceptor or similar mechanism
       // for better separation of concerns and reusability.
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products`); // Use relative path if within the same origin
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products`,{method:"GET",credentials:"include"}); // Use relative path if within the same origin
       if (!response.ok) {
         throw new Error('Failed to fetch products');
       }
