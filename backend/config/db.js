@@ -8,9 +8,14 @@ const pool = new Pool({
   port: 5432, // Default PostgreSQL port
 });
 
-pool.on('error', (err, client) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
-});
+const connectDB = async () => {
+  try {
+    await pool.connect();
+    console.log('PostgreSQL connected successfully.');
+  } catch (err) {
+    console.error('Database connection error:', err);
+    process.exit(1);
+  }
+};
 
-module.exports = pool;
+module.exports = connectDB;
