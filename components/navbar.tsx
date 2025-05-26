@@ -33,7 +33,7 @@ export default function Navbar() {
 
   // Async function to call the backend logout API
   const backendLogout = async () => {
-    const response = await fetch(`${process.env.NEXT_BASE_PUBLIC_URL}/api/logout`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/logout`, {
       method: 'POST', // Or 'DELETE', depending on your backend
       credentials: 'include', // Important for sending cookies
     });
