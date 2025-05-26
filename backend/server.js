@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const apiRoutes = require('./routes/api');
+const connectDB = require('./config/db');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const app = express();
@@ -30,12 +31,7 @@ app.use(cors({
   credentials: true // Allow cookies to be sent with the request
 }));
 
-// Basic route for the root URL
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
-});
-
-app.use('/api', apiRoutes);
+connectDB();
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

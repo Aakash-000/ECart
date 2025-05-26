@@ -1,7 +1,7 @@
 'use client'
 
 import { useForm } from 'react-hook-form'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { useProductStore } from '@/store/productStore';
 import { useAuthStore } from '@/store/authStore';
 import { Product } from '@/types/product';
@@ -14,7 +14,7 @@ const productFormSchema = z.object({
   price: z.number().min(0.01, 'Price must be greater than 0'),
   description: z.string().optional(),
   sku: z.string().optional(),
-  category_id: z.string().optional(), // Assuming category_id will be handled as a string input for now
+ category_id: z.string().optional().refine(val => val === '' || !isNaN(Number(val)), { message: 'Invalid Category ID' }),
   brand: z.string().optional(),
   weight: z.number().optional(),
   dimensions: z.string().optional(), // Allow both string or number
@@ -27,6 +27,12 @@ const ProductForm = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ProductFormInputs>({
+    defaultValues: {
+      name: '',
+      price: 0,
+ category_id: '', // Set default value for select
+    },
+
     resolver: zodResolver(productFormSchema),
   });
   const { user } = useAuthStore();
@@ -36,7 +42,7 @@ const ProductForm = () => {
       const formData = new FormData();
       Object.entries(newProduct).forEach(([key, value]) => {
         formData.append(key, value as any);
-      });
+ });
       const response = await fetch('/api/products/upload', { // Assuming a dedicated upload endpoint
         method: 'POST',
         headers: {
@@ -55,6 +61,15 @@ const ProductForm = () => {
     },
     onError: (error) => {
       toast({ title: 'Error adding product', description: error.message, variant: 'destructive' });
+    },
+  });
+
+  const { data: categories, isLoading: isLoadingCategories, error: categoriesError } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const response = await fetch('/api/categories');
+      if (!response.ok) throw new Error('Failed to fetch categories');
+      return response.json();
     },
   });
 
@@ -107,13 +122,23 @@ const ProductForm = () => {
       <div>
         <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">
           Category ID
-        </label>
-        <input
+ </label>
+        {isLoadingCategories && <p>Loading categories...</p>}
+        {categoriesError && <p className="text-red-500 text-sm mt-1">Error loading categories: {categoriesError.message}</p>}
+        {!isLoadingCategories && !categoriesError && (
+ <select
           id="category_id"
-          type="text"
           {...register('category_id')}
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
+ >
+            <option value="">Select a category</option>
+            {categories?.map((category: any) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+ ))}
+ </select>
+ )}
         {errors.category_id && <p className="text-red-500 text-sm mt-1">{errors.category_id.message}</p>}
       </div>
 

@@ -5,183 +5,63 @@ const pool = require('../config/db'); // Import the database pool
 const jwt = require('jsonwebtoken'); // Import jsonwebtoken
 const authenticatedRouter = express.Router(); // Create a separate router for authenticated routes
 // Import PayPal SDK
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { upload } = require('../middleware/uploadMiddleware');
 const paypal = require('@paypal/checkout-server-sdk');
+const { isAuthenticated, verifyJWT } = require('../middleware/authMiddleware');
+const { getPlaceholderData } = require('../controllers/placeholderController');
+const { UserController } = require('../controllers/userController');
+const { ProductController } = require('../controllers/productController');
+const { CategoryController } = require('../controllers/categoryController');
 
 // Configure PayPal Client
 // Replace with your actual PayPal Client ID and Client Secret
-
-// Middleware to check if user is authenticated via session
-function isAuthenticated(req, res, next) {
-  if (req.session && req.session.user) {
-    // User is authenticated, proceed to the next middleware or route handler
-    return next();
-  }
- else {
-    // User is not authenticated, return 401 Unauthorized
-    return res.sendStatus(401); // If there's no token, return 401 Unauthorized
-
-  }
-
-  }
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '../uploads/images'); // Define your upload directory
-    // Create the upload directory if it doesn't exist
-    fs.mkdir(uploadPath, { recursive: true }, (err) => {
-      if (err) {
-        console.error('Error creating upload directory:', err);
-        return cb(err, ''); // Pass error to multer
-      }
-      cb(null, uploadPath);
-    });
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-const upload = multer({ storage });
-
-// Middleware to verify JWT
-function verifyJWT(req, res, next) {
-  const token = req.cookies.token; // Get token from the 'token' cookie
-
-  if (!token) {
-    return res.sendStatus(401); // If there's no token, return 401 Unauthorized
-  }
-
-  const jwtSecret = process.env.JWT_SECRET || 'YOUR_DEFAULT_SECRET'; // Use environment variable or a default
-
-  jwt.verify(token, jwtSecret, (err, decoded) => {
-    if (err) {
-      return res.sendStatus(403); // If token is invalid, return 403 Forbidden
-    }
-    req.user = decoded; // Attach the decoded user information to the request object
-    next(); // Proceed to the next middleware or route handler
-  });
-}
-
-
 
 const environment = new paypal.core.SandboxEnvironment('YOUR_PAYPAL_CLIENT_ID', 'YOUR_PAYPAL_CLIENT_SECRET');
 
 // Apply verifyJWT middleware to the authenticated router
 authenticatedRouter.use(verifyJWT);
-// Route for user signup 
-router.post('/signup', async (req, res) => { 
-  const { email, password } = req.body; 
+router.post('/signup', UserController.signup);
+router.post('/login', UserController.login);
 
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required.' });
+// Product routes
+authenticatedRouter.get('/products', ProductController.getAllProducts);
+authenticatedRouter.get('/products/:id', ProductController.getProductById);
+authenticatedRouter.post('/products', upload.single('image'), ProductController.createProduct);
+
+// Route to add a new category
+authenticatedRouter.post('/categories', async (req, res) => {
+  const { name, parent_id } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ error: 'Category name is required.' });
   }
 
   try {
-    // Check if user already exists 
-    const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]); 
-    if (existingUser.rows.length > 0) { 
-      return res.status(409).json({ error: 'User with this email already exists.' });
-    }
-
-    // Hash the password
-    const saltRounds = 10; // Recommended salt rounds for bcrypt
-    const password_hash = await bcrypt.hash(password, saltRounds);
-
-    // Insert the new user into the database 
-    await pool.query('INSERT INTO users (email, password_hash) VALUES ($1, $2)', [email, password_hash]); 
-    res.status(201).json({ message: 'User registered successfully.' });
-  } catch (err) {
-    console.error('Error during signup:', err);
-    res.status(500).json({ error: 'An error occurred during signup.' });
-  }
-}); 
-
-// Route for user login
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required.' });
-  }
-
-  try {
-    // Find the user by email
-    const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-
-    if (user.rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid email or password.' });
-    }
-
-    // Compare the provided password with the stored hash
-    const passwordMatch = await bcrypt.compare(password, user.rows[0].password_hash);
-
-    if (!passwordMatch) {
-      return res.status(401).json({ error: 'Invalid email or password.' });
-    }
-
-    // Passwords match, create a JWT
-    const jwtSecret = process.env.JWT_SECRET || 'YOUR_DEFAULT_SECRET'; // Use environment variable or a default
-    const token = jwt.sign(
-      { id: user.rows[0].id, email: user.rows[0].email },
-      jwtSecret,
-      { expiresIn: '1d' } // Token expires in 1 day
+    const result = await pool.query(
+      'INSERT INTO categories (name, parent_id) VALUES ($1, $2) RETURNING *',
+      [name, parent_id || null] // Use null for parent_id if not provided
     );
-
-    // Set the JWT in an HttpOnly, Secure, and SameSite cookie
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' && process.env.HTTPS === 'true', // Set to true only in production with HTTPS
-      sameSite: 'Lax', // Or 'Strict' depending on your needs
-    });
-    res.status(200).json({ message: 'Login successful.' });
-  }  catch (err) {
-    console.error('Error during login:', err);
-    res.status(500).json({ error: 'An error occurred during login.' });
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error adding category:', err);
+    res.status(500).json({ error: 'An error occurred while adding the category.' });
   }
 });
 
-// Route to add a new product with image upload
-authenticatedRouter.post('/products', upload.single('image'), async (req, res) => {
-  const { name, description, price, sku, category_id, brand, weight, dimensions } = req.body;
-
-  if (!req.file) {
-    return res.status(400).json({ error: 'No image file uploaded.' });
-  }
-
-  const imagePath = req.file.path; // Path where multer saved the image
-
+// Route to get all categories
+authenticatedRouter.get('/categories', async (req, res) => {
   try {
-    // Start a transaction
-    await pool.query('BEGIN');
-
-    // Insert product details into the products table
-    const productResult = await pool.query(
-      'INSERT INTO products (name, description, price, sku, category_id, brand, weight, dimensions) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
-      [name, description, price, sku, category_id, brand, weight, dimensions]
-    );
-
-    const newProductId = productResult.rows[0].id;
-
-    // Insert image path into the product_images table
-    await pool.query(
-      'INSERT INTO product_images (product_id, image_url, alt_text, order_num) VALUES ($1, $2, $3, $4)',
-      [newProductId, imagePath, name, 0] // Using product name as alt_text, default order_num 0
-    );
-
-    // Commit the transaction
-    await pool.query('COMMIT');
-
-    res.status(201).json({ message: 'Product added successfully!', productId: newProductId, imagePath: imagePath });
+    const result = await pool.query('SELECT * FROM categories ORDER BY name');
+    res.json(result.rows);
   } catch (err) {
-    // Rollback the transaction in case of error
-    await pool.query('ROLLBACK');
-    console.error('Error adding product with image:', err);
-    res.status(500).json({ error: 'An error occurred while adding the product.', details: err.message });
+    console.error('Error fetching categories:', err);
+    res.status(500).json({ error: 'An error occurred while fetching categories.' });
   }
 });
+
+
+
+
 
 const client = new paypal.core.PayPalHttpClient(environment);
 

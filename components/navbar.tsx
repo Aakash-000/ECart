@@ -110,6 +110,7 @@ export default function Navbar() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem><Link href="/admin/add-product">Add Product</Link></DropdownMenuItem>
+                  <DropdownMenuItem><Link href="/admin/add-category">Add Category</Link></DropdownMenuItem>
                 </DropdownMenuContent>
                 </DropdownMenu>
                </Link>
