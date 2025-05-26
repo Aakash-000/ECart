@@ -43,7 +43,7 @@ const ProductForm = () => {
       Object.entries(newProduct).forEach(([key, value]) => {
         formData.append(key, value as any);
  });
-      const response = await fetch('/api/products/upload', { // Assuming a dedicated upload endpoint
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products/upload`, { // Assuming a dedicated upload endpoint
         method: 'POST',
         headers: {
           // 'Authorization': `Bearer ${user?.token}`, // Add authorization header if needed
@@ -67,7 +67,7 @@ const ProductForm = () => {
   const { data: categories, isLoading: isLoadingCategories, error: categoriesError } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const response = await fetch('/api/categories');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/categories`,{method:"GET", credentials:"include"});
       if (!response.ok) throw new Error('Failed to fetch categories');
       return response.json();
     },
@@ -121,7 +121,7 @@ const ProductForm = () => {
       {/* Category ID */}
       <div>
         <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">
-          Category ID
+          Category 
  </label>
         {isLoadingCategories && <p>Loading categories...</p>}
         {categoriesError && <p className="text-red-500 text-sm mt-1">Error loading categories: {categoriesError.message}</p>}
