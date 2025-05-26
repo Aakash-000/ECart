@@ -8,6 +8,8 @@ import { useCart } from "@/context/cart-context"
 import { useAuthStore } from "@/store/authStore"
 import { useRouter } from "next/navigation"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useMutation } from "@tanstack/react-query"
+import { useToast } from "@/hooks/use-toast"
 
 export default function Navbar() {
   const { state } = useCart()
@@ -18,6 +20,7 @@ export default function Navbar() {
   const { isAuthenticated,isLoading, logout,user } = useAuthStore();
 
   const router = useRouter();
+  const { toast } = useToast();
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen)
     if (searchOpen) setSearchOpen(false)
@@ -27,6 +30,27 @@ export default function Navbar() {
     setSearchOpen(!searchOpen)
     if (mobileMenuOpen) setMobileMenuOpen(false)
   }
+
+  // Async function to call the backend logout API
+  const backendLogout = async () => {
+    const response = await fetch(`${process.env.NEXT_BASE_PUBLIC_URL}/api/logout`, {
+      method: 'POST', // Or 'DELETE', depending on your backend
+      credentials: 'include', // Important for sending cookies
+    });
+
+    if (!response.ok) {
+      throw new Error('Backend logout failed.');
+    }
+  };
+
+  // React Query mutation for logout
+  const logoutMutation = useMutation({
+    mutationFn: backendLogout,
+    onSuccess: () => {
+      logout(); // Clear frontend state using Zustand      router.push("/login"); // Redirect
+      router.push("/login"); // Redirect
+    },
+  })
 
   return (
   <>
@@ -117,11 +141,11 @@ export default function Navbar() {
                <button
                 className="flex items-center text-sm group"
                 onClick={() => {
-                  logout();
-                  router.push("/login");
-                }}
+                  logoutMutation.mutate(); // Trigger the logout mutation
+}}
+                disabled={logoutMutation.isPending} // Disable button while loading
               >
-                <span className="group-hover:text-indigo-600 transition-colors">Logout</span>
+                <span className="group-hover:text-indigo-600 transition-colors">{logoutMutation.isPending ? "Logging out..." : "Logout"}</span>
               </button>
             </>
           )
@@ -215,12 +239,12 @@ export default function Navbar() {
             <button
               className="py-3 border-b text-left w-full"
               onClick={() => {
-                logout();
                 toggleMobileMenu();
-                router.push("/login");
-              }}
+                logoutMutation.mutate(); // Trigger the logout mutation
+}}
+              disabled={logoutMutation.isPending} // Disable button while loading
             >
-              <span className="font-medium">Logout</span>
+              <span className="font-medium">{logoutMutation.isPending ? "Logging out..." : "Logout"}</span>
             </button>
           ) : (
             <>
