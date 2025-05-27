@@ -4,7 +4,15 @@ const {pool} = require('../config/db');
 const ProductModel = {
   getAllProducts: async () => {
     try {
-      const result = await pool.query('SELECT * FROM products');
+      const result = await pool.query(`
+        SELECT
+          p.*,
+          (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.order_num ASC LIMIT 1) AS image_url,
+          (SELECT pi.alt_text FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.order_num ASC LIMIT 1) AS alt_text
+        FROM products p
+        ORDER BY p.id ASC
+      `);
+
       return result.rows;
     } catch (err) {
       console.error('Error fetching products:', err);
@@ -14,7 +22,13 @@ const ProductModel = {
 
   getProductById: async (id) => {
     try {
-      const result = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+      const result = await pool.query(`
+        SELECT p.*, pi.image_url, pi.alt_text
+        FROM products p
+        LEFT JOIN product_images pi ON p.id = pi.product_id
+        WHERE p.id = $1
+        ORDER BY pi.order_num ASC
+        LIMIT 1`, [id]);
       return result.rows[0]; // Assuming ID is unique, return the first row
     } catch (err) {
       console.error('Error fetching product by ID:', err);
