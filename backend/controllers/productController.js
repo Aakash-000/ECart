@@ -33,6 +33,7 @@ const ProductController = {
   },
 
   createProduct: async (req, res) => {
+    console.log('req.file:', req.file);
     const { name, description, price, sku, category_id, brand, weight, dimensions } = req.body;
     const imageFile = req.file; // Assuming multer middleware adds the file to req.file
 
