@@ -24,10 +24,20 @@ authenticatedRouter.use(verifyJWT);
 // Product routes
 authenticatedRouter.get('/products', ProductController.getAllProducts);
 authenticatedRouter.get('/products/:id', ProductController.getProductById);
-authenticatedRouter.post('/products', upload.single('image'), ProductController.createProduct);
 console.log('Hit /api/products/upload route');
 // New route for image upload
-authenticatedRouter.post('/products/upload', upload.single('image'), ProductController.uploadProductImage);
+authenticatedRouter.post('/products', upload.single('image')(req, res, function (err) {
+  if (err instanceof multer.MulterError) {
+    // A Multer error occurred when uploading.
+    console.error('Multer error:', err);
+    return res.status(500).json({ error: 'File upload error', details: err.message });
+  } else if (err) {
+    // An unknown error occurred when uploading.
+    console.error('Unknown upload error:', err);
+    return res.status(500).json({ error: 'An unknown error occurred during upload', details: err.message });
+  }
+  // Everything went fine, proceed to controller
+  next();}), ProductController.uploadProductImage);
 
 
 // Route to add a new category
@@ -49,23 +59,9 @@ authenticatedRouter.get('/products', async (req, res) => {
  console.error('Error fetching products:', err);
  res.status(500).json({ error: 'An error occurred while fetching products.' });
  }
-});
-router.post('/products', (req, res, next) => {
-  upload.single('image')(req, res, function (err) {
-    if (err instanceof multer.MulterError) {
-      // A Multer error occurred when uploading.
-      console.error('Multer error:', err);
-      return res.status(500).json({ error: 'File upload error', details: err.message });
-    } else if (err) {
-      // An unknown error occurred when uploading.
-      console.error('Unknown upload error:', err);
-      return res.status(500).json({ error: 'An unknown error occurred during upload', details: err.message });
-    }
-    // Everything went fine, proceed to controller
-    next();
-  });
-}, ProductController.createProduct);
+}); // Removed duplicate route, this was likely unintended
 
+ // This needs to use authenticatedRouter
 // Route to get a single product by ID
 authenticatedRouter.get('/products/:id', async (req, res) => {
   const { id } = req.params;
