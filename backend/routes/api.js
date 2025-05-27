@@ -24,6 +24,9 @@ authenticatedRouter.use(verifyJWT);
 authenticatedRouter.get('/products', ProductController.getAllProducts);
 authenticatedRouter.get('/products/:id', ProductController.getProductById);
 authenticatedRouter.post('/products', upload.single('image'), ProductController.createProduct);
+// New route for image upload
+authenticatedRouter.post('/products/upload', upload.single('image'), ProductController.uploadProductImage);
+
 
 // Route to add a new category
 authenticatedRouter.post('/categories', CategoryController.createCategory);

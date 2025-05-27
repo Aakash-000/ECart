@@ -3,6 +3,12 @@ const ProductImageModel = require('../models/productImageModel');
 
 const ProductController = {
   getAllProducts: async (req, res) => {
+    // Configure multer middleware for file uploads here, outside of any controller function.
+    // Example:
+    // const storage = multer.diskStorage({...});
+    // const upload = multer({ storage: storage });
+    // This 'upload' variable would then be used in the routes file.
+
     try {
       const products = await ProductModel.getAllProducts();
       res.json(products);
@@ -72,7 +78,22 @@ const ProductController = {
       console.error('Error in ProductController.createProduct:', err);
       res.status(500).json({ error: 'An error occurred while adding the product.', details: err.message });
     }
-  }
-};
+  },
 
+  uploadProductImage: async (req, res) => {
+    const uploadedFile = req.file; // This is the file object provided by multer
+
+    if (!uploadedFile) {
+      return res.status(400).json({ error: 'No file uploaded.' });
+    }
+
+    console.log('Uploaded file details:', uploadedFile);
+
+    // TODO: Add logic here to save the file to a persistent storage (e.g., disk, S3)
+    // TODO: Get the path or URL of the saved image
+    // TODO: Call ProductImageModel.createProductImage to save image info to the database
+
+    res.status(200).json({ message: 'File uploaded successfully!', file: uploadedFile });
+  },
+};
 module.exports = ProductController;
