@@ -35,7 +35,7 @@ const ProductList: React.FC = () => {
           {products.map((product: Product) => (
             <li key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="relative h-48 w-full">
-                {product.imagePath ? (
+                {product.image_url ? (
               <Image
                        src={product.image_url} // Construct the full image URL
                        alt={product.image_url || 'Product Image'} // Use product name as alt text
