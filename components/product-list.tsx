@@ -37,7 +37,7 @@ const ProductList: React.FC = () => {
               <div className="relative h-48 w-full">
                 {product.imagePath ? (
               <Image
-                       src={`${process.env.NEXT_PUBLIC_BASE_URL}${product.image_url}`} // Construct the full image URL
+                       src={product.image_url} // Construct the full image URL
                        alt={product.image_url || 'Product Image'} // Use product name as alt text
                        layout="fill" // Or 'responsive', depending on your styling needs
                        objectFit="cover" // Or 'contain', depending on how you want the image to fit
