@@ -43,7 +43,7 @@ const ProductModel = {
       console.error('Error in ProductModel.createProduct:', error);
       throw error; // Re-throw the error to be caught by the controller
     }
-  };
+  }
 
 };
 
