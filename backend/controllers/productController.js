@@ -87,7 +87,8 @@ const ProductController = {
       return res.status(400).json({ error: 'No file uploaded.' });
     }
 
-    console.log('Uploaded file details:', uploadedFile);
+    console.log('Request file:', req.file);
+    console.log('Request body:', req.body);
 
     // TODO: Add logic here to save the file to a persistent storage (e.g., disk, S3)
     // TODO: Get the path or URL of the saved image
