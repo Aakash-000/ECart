@@ -93,20 +93,30 @@ const ProductController = {
   
 
   uploadProductImage: async (req, res) => {
-    const uploadedFile = req.file; // This is the file object provided by multer
+    try {
+      const uploadedFile = req.file; // This is the file object provided by multer
+      const { product_id } = req.body; // Get product_id from the request body
 
-    if (!uploadedFile) {
-      return res.status(400).json({ error: 'No file uploaded.' });
-    }
+      if (!uploadedFile) {
+        return res.status(400).json({ error: 'No file uploaded.' });
+      }
 
-    console.log('Request file:', req.file);
-    console.log('Request body:', req.body);
+      // Construct the relative path starting from /uploads
+      const relativeImagePath = `/uploads/images/${uploadedFile.filename}`;
 
-    // TODO: Add logic here to save the file to a persistent storage (e.g., disk, S3)
-    // TODO: Get the path or URL of the saved image
-    // TODO: Call ProductImageModel.createProductImage to save image info to the database
+      // Save image info to the database
+      await ProductImageModel.createProductImage(
+        product_id,
+        relativeImagePath,
+        uploadedFile.originalname, // Use original filename as alt text, or you can get it from req.body
+        0 // Default order_num
+      );
 
     res.status(200).json({ message: 'File uploaded successfully!', file: uploadedFile });
-  },
+    } catch (error) {
+      console.error('Error in ProductController.uploadProductImage:', error);
+      res.status(500).json({ error: 'An error occurred while uploading the image.' });
+    }
+  }
 };
 module.exports = ProductController;
