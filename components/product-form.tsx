@@ -43,9 +43,10 @@ const ProductForm = () => {
     resolver: zodResolver(productFormSchema),
   });
   const { user } = useAuthStore();
-
+  
   const addProductMutation = useMutation({
     mutationFn: async (newProduct: ProductFormInputs) => {
+      console.log(newProduct)
       const formData = new FormData();
       Object.entries(newProduct).forEach(([key, value]) => {
         formData.append(key, value as any);
