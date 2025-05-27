@@ -52,9 +52,8 @@ const ProductForm = () => {
  });
       const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products/upload`, { // Assuming a dedicated upload endpoint
         method: 'POST',
-        headers: {
-          // 'Authorization': `Bearer ${user?.token}`, // Add authorization header if needed
-        }, body: formData,
+        body: formData,
+        credentials:"include"
       })
       if (!response.ok) {
         throw new Error('Failed to add product')
