@@ -38,7 +38,7 @@ authenticatedRouter.post('/products', (req,res,next) => {upload.single('image')(
   }
   // Everything went fine, proceed to controller
   next();})
-}, ProductController.uploadProductImage);
+}, ProductController.createProduct);
 
 
 
