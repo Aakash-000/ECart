@@ -21,18 +21,30 @@ const ProductModel = {
     }
   },
 
-  createProduct: async ({ name, description, price, sku, category_id, brand, weight, dimensions }) => {
+  // Inside backend/models/productModel.js
+
+  createProduct : async (name, description, price, sku, category_id, brand, weight, dimensions) => {
     try {
-      const result = await pool.query(
+      console.log('ProductModel.createProduct received name:', name); // Add this line
+      console.log('ProductModel.createProduct received price:', price); // Add this line
+      // Add console logs for other arguments
+
+      const result = await db.query(
         'INSERT INTO products (name, description, price, sku, category_id, brand, weight, dimensions) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
         [name, description, price, sku, category_id, brand, weight, dimensions]
       );
-      return result.rows[0]; // Return the newly created product
-    } catch (err) {
-      console.error('Error creating product:', err);
-      throw err;
+
+      console.log('SQL query executed:', 'INSERT INTO products (name, description, price, sku, category_id, brand, weight, dimensions) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *'); // Log the query
+      console.log('Values passed to query:', [name, description, price, sku, category_id, brand, weight, dimensions]); // Log the values
+
+
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error in ProductModel.createProduct:', error);
+      throw error; // Re-throw the error to be caught by the controller
     }
-  },
+  };
+
 };
 
 module.exports = ProductModel;
