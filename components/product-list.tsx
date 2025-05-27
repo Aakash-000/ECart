@@ -24,7 +24,7 @@ const ProductList: React.FC = () => {
   if (isError) {
     return <div>Error fetching products: {error.message}</div>;
   }
-
+  console.log(data)
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold mb-6">Products</h2>
