@@ -81,7 +81,7 @@ const ProductForm = () => {
   });
 
   return (
-    <form onSubmit={handleSubmit(data => addProductMutation.mutate(data))} className="space-y-4">
+    <form onSubmit={handleSubmit(data => addProductMutation.mutate(data))} className="space-y-4" encType="multipart/form-data">
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
           Product Name
