@@ -26,22 +26,7 @@ authenticatedRouter.get('/products', ProductController.getAllProducts);
 authenticatedRouter.get('/products/:id', ProductController.getProductById);
 console.log('Hit /api/products/upload route');
 // New route for image upload
-authenticatedRouter.post('/products', (req,res,next) => {upload.single('image')(req, res, function (err) {
-  if (err instanceof multer.MulterError) {
-    // A Multer error occurred when uploading.
-    console.error('Multer error:', err);
-    return res.status(500).json({ error: 'File upload error', details: err.message });
-  } else if (err) {
-    // An unknown error occurred when uploading.
-    console.error('Unknown upload error:', err);
-    return res.status(500).json({ error: 'An unknown error occurred during upload', details: err.message });
-  }
-  console.log("successful upload");
-  // Everything went fine, proceed to controller
-  next();
-
-})
-}, ProductController.createProduct);
+authenticatedRouter.post('/products', upload.single('image'), ProductController.createProduct);
 
 
 
