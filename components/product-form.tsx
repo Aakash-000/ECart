@@ -50,7 +50,7 @@ const ProductForm = () => {
       Object.entries(newProduct).forEach(([key, value]) => {
         formData.append(key, value as any);
  });
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products/upload`, { // Assuming a dedicated upload endpoint
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products`, { // Assuming a dedicated upload endpoint
         method: 'POST',
         body: formData,
         credentials:"include"
