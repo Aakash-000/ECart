@@ -35,12 +35,12 @@ const ProductList: React.FC = () => {
           {products.map((product: Product) => (
             <li key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="relative h-48 w-full">
-                <Image
-                  src={product.image_url || '/placeholder.jpg'} // Use a placeholder if no image_url
-                  alt={product.name}
-                  layout="fill"
-                  objectFit="cover"
-                />
+              <Image
+                       src={`${process.env.NEXT_PUBLIC_BASE_URL}${product.imagePath}`} // Construct the full image URL
+                       alt={product.name || 'Product Image'} // Use product name as alt text
+                       layout="fill" // Or 'responsive', depending on your styling needs
+                       objectFit="cover" // Or 'contain', depending on how you want the image to fit
+                     />
               </div>
               <div className="p-4">
                 <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
