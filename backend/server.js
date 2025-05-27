@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const apiRoutes = require('./routes/api');
 const cors = require('cors');
+const path = require('path');
 const cookieParser = require('cookie-parser');
 const app = express();
 const port = process.env.PORT || 3000;
@@ -29,6 +30,9 @@ app.use(cors({
   origin: 'http://localhost:3001', // Allow requests from your frontend's origin
   credentials: true // Allow cookies to be sent with the request
 }));
+
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const { connectDB } = require('./config/db');
 connectDB();
