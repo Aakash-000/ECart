@@ -24,6 +24,7 @@ authenticatedRouter.use(verifyJWT);
 authenticatedRouter.get('/products', ProductController.getAllProducts);
 authenticatedRouter.get('/products/:id', ProductController.getProductById);
 authenticatedRouter.post('/products', upload.single('image'), ProductController.createProduct);
+console.log('Hit /api/products/upload route');
 // New route for image upload
 authenticatedRouter.post('/products/upload', upload.single('image'), ProductController.uploadProductImage);
 
