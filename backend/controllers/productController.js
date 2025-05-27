@@ -47,9 +47,15 @@ const ProductController = {
     try {
       // Start a transaction if your database library supports it
       // await pool.query('BEGIN'); // Example for pg
-      console.log('req.body:', req.body); // Add this line
-        console.log('req.file:', req.file); // This is already there, keep it for debugging image
-       
+      console.log('req.body:', req.body);
+      console.log('req.file:', req.file);
+
+      const { name, description, price, sku, category_id, brand, weight, dimensions } = req.body;
+
+      console.log('name after destructuring:', name); // Add this line
+      console.log('description after destructuring:', description); // Add this line
+      // Add console logs for other variables as well
+
       const productResult = await ProductModel.createProduct(
         name,
         description,
