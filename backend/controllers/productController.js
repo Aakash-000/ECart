@@ -32,30 +32,25 @@ const ProductController = {
     }
   },
 
-  createProduct: async (req, res) => {
-    console.log('req.file:', req);
-  
-    const { name, description, price, sku, category_id, brand, weight, dimensions } = req.body;
-    const imageFile = req.file; // Assuming multer middleware adds the file to req.file
-
-    if (!imageFile) {
-      return res.status(400).json({ error: 'No image file uploaded.' });
-    }
-
-    const imagePath = imageFile.path; // Path where multer saved the image
-
+  const createProduct = async (req, res) => {
     try {
-      // Start a transaction if your database library supports it
-      // await pool.query('BEGIN'); // Example for pg
       console.log('req.body:', req.body);
       console.log('req.file:', req.file);
-
+  
       const { name, description, price, sku, category_id, brand, weight, dimensions } = req.body;
-
-      console.log('name after destructuring:', name); // Add this line
-      console.log('description after destructuring:', description); // Add this line
-      // Add console logs for other variables as well
-
+  
+      console.log('name after destructuring:', name);
+      console.log('description after destructuring:', description);
+      console.log('price after destructuring:', price);
+      console.log('sku after destructuring:', sku);
+      console.log('category_id after destructuring:', category_id);
+      console.log('brand after destructuring:', brand);
+      console.log('weight after destructuring:', weight);
+      console.log('dimensions after destructuring:', dimensions);
+  
+  
+      console.log('Before calling createProduct - name:', name); // Add this line
+  
       const productResult = await ProductModel.createProduct(
         name,
         description,
@@ -66,29 +61,36 @@ const ProductController = {
         weight,
         dimensions
       );
-
+  
+      console.log('After calling createProduct - productResult:', productResult); // Add this line
+  
+  
       const newProductId = productResult.id; // Assuming createProduct returns the new product ID
-
+      const imagePath = req.file.path; // Path where multer saved the image
+  
+  
+      console.log('Before calling createProductImage - newProductId:', newProductId); // Add this line
+      console.log('Before calling createProductImage - imagePath:', imagePath); // Add this line
+      console.log('Before calling createProductImage - name:', name); // Add this line
+  
+  
       await ProductImageModel.createProductImage(
         newProductId,
         imagePath,
         name, // Using product name as alt_text
         0 // Default order_num
       );
-
-      // Commit the transaction
-      // await pool.query('COMMIT'); // Example for pg
-
-
+  
+      console.log('After calling createProductImage'); // Add this line
+  
+  
       res.status(201).json({ message: 'Product added successfully!', productId: newProductId, imagePath: imagePath });
     } catch (err) {
-      // Rollback the transaction in case of error
-      // await pool.query('ROLLBACK'); // Example for pg
-
       console.error('Error in ProductController.createProduct:', err);
       res.status(500).json({ error: 'An error occurred while adding the product.', details: err.message });
     }
   },
+  
 
   uploadProductImage: async (req, res) => {
     const uploadedFile = req.file; // This is the file object provided by multer
