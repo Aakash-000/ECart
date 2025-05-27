@@ -36,8 +36,11 @@ authenticatedRouter.post('/products', (req,res,next) => {upload.single('image')(
     console.error('Unknown upload error:', err);
     return res.status(500).json({ error: 'An unknown error occurred during upload', details: err.message });
   }
+  console.log("successful upload");
   // Everything went fine, proceed to controller
-  next();})
+  next();
+
+})
 }, ProductController.createProduct);
 
 
