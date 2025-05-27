@@ -32,7 +32,7 @@ const ProductController = {
     }
   },
 
-  const createProduct = async (req, res) => {
+  createProduct : async (req, res) => {
     try {
       console.log('req.body:', req.body);
       console.log('req.file:', req.file);
