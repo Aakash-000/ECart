@@ -49,8 +49,21 @@ const ProductForm = () => {
       console.log(newProduct)
       const formData = new FormData();
       Object.entries(newProduct).forEach(([key, value]) => {
-        formData.append(key, value as any);
- });
+        if (key !== 'image') {
+          formData.append(key, value as any);
+        }
+      });
+
+      if (newProduct.image && newProduct.image.length > 0) {
+        // If you expect only one image, append the first file
+        formData.append('image', newProduct.image[0]);
+  
+        // If you expect multiple images, loop through the array and append each with 'image[]'
+        // newProduct.image.forEach((file: File) => {
+        //   formData.append('image[]', file);
+        // });
+      }
+  
       const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products`, { // Assuming a dedicated upload endpoint
         method: 'POST',
         body: formData,
