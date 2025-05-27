@@ -11,6 +11,7 @@ const { isAuthenticated, verifyJWT } = require('../middleware/authMiddleware');
 const UserController = require('../controllers/userController');
 const ProductController = require('../controllers/productController');
 const  CategoryController  = require('../controllers/categoryController');
+const multer = require('multer');
 
 // Configure PayPal Client
 // Replace with your actual PayPal Client ID and Client Secret
