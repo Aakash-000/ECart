@@ -1,5 +1,5 @@
 const {pool} = require('../config/db');
-const db = require('../config/db');
+// const db = require('../config/db');
 
 const ProductModel = {
   getAllProducts: async () => {
@@ -30,7 +30,7 @@ const ProductModel = {
       console.log('ProductModel.createProduct received price:', price); // Add this line
       // Add console logs for other arguments
 
-      const result = await db.query(
+      const result = await pool.query(
         'INSERT INTO products (name, description, price, sku, category_id, brand, weight, dimensions) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
         [name, description, price, sku, category_id, brand, weight, dimensions]
       );
