@@ -39,11 +39,11 @@ export default function LoginPage() {
   const { mutate, status } = useMutation<string, Error, LoginFormData>({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      // Removed localStorage token storage
+      toast({ title: "Login successful", description: "You have been logged in successfully." });
       login(); // Call login action from auth store
       router.push("/"); // Redirect to a protected page or dashboard
  },
-    onError: (error: any) => {
+ onError: (error) => {
       toast({ title: "Login Failed", description: error.message, variant: "destructive" });
     },  
  

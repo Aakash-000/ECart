@@ -63,9 +63,9 @@ export default function AddCategoryPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category added successfully!');
-      reset();
+ reset();
     },
-    onError: (error) => {
+ onError: (error) => {
       toast.error(`Error adding category: ${error.message}`);
     },
   });

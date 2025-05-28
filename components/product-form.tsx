@@ -76,7 +76,7 @@ const ProductForm = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] }); // Invalidate product list cache
-      toast({ title: 'Product added successfully!' });
+      toast({ title: 'Product added', description: 'The product has been added successfully.' });
       reset();
     },
     onError: (error) => {
