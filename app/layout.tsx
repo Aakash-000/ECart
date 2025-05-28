@@ -5,6 +5,7 @@ import "./globals.css"
 import { CartProvider } from "@/context/cart-context"
 import NavbarWrapper from "@/components/navbar-wrapper"
 import QueryProvider from "@/components/query-provider"
+import { Toaster } from "../components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -24,6 +25,7 @@ export default function RootLayout({
         <QueryProvider>
           <CartProvider>
             <NavbarWrapper />
+            <Toaster />
             <main>{children}</main>
           </CartProvider>
         </QueryProvider>

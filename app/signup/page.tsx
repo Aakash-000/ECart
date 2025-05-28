@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { signupSchema, SignupFormInputs } from '@/lib/validation'; // Import the schema and type
-import { toast } from '@/components/ui/use-toast';
+import { useState } from 'react'; // Keep useState for messages
 
 export default function SignupPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<SignupFormInputs>({
@@ -39,20 +39,12 @@ export default function SignupPage() {
 
   const mutation = useMutation({
     mutationFn: createUser,
-    onSuccess: (data) => {
-      toast({
-        title: "Signup successful",
-        description: "Your account has been created successfully.",
-      })
+    onSuccess: () => {
+      setMessage('Signup successful! Redirecting to login...');
       setError(''); // Clear any previous errors
       setTimeout(() => router.push('/login'), 2000); // Redirect to login page after a delay
     },
     onError: (err: Error) => {
-      toast({
-        title: "Error signing up",
-        description: err.message,
-        variant: "destructive",
-      })
       setError(err.message);
     }
   });
