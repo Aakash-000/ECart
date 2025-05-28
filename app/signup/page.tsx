@@ -17,6 +17,7 @@ export default function SignupPage() {
   const router = useRouter();
  
   const handleSignup = async (data: SignupFormInputs) => {
+    console.log(data)
     mutation.mutate(data);
   };
 
