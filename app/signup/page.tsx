@@ -15,15 +15,19 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const router = useRouter();
- 
+
   const handleSignup = async (data: SignupFormInputs) => {
     console.log(data)
     mutation.mutate(data);
   };
 
   const createUser = async (data: SignupFormInputs) => {
+    console.log(data)
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/signup`, {
       method: 'POST',
+      headers:{
+        "Content-Type":"application/json"
+      },
       body: JSON.stringify(data),
     });
     
