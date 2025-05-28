@@ -25,7 +25,7 @@ export default function SignupPage() {
       method: 'POST',
       body: JSON.stringify(data),
     });
-
+    
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || 'Signup failed.');
