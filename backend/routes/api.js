@@ -130,7 +130,9 @@ router.post('/webhook', (req, res) => {
 authenticatedRouter.get('/authenticated', (req, res) => {
   res.status(200).json({ message: 'Authenticated', user: req.user });
 });
+
 router.post('/signup', UserController.signup);
+
 // Mount the authenticated router
 router.use('/', authenticatedRouter);
 
