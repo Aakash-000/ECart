@@ -6,14 +6,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { signupSchema, SignupFormInputs } from '@/lib/validation'; // Import the schema and type
-import { useState } from 'react'; // Keep useState for messages
+import { toast } from '@/components/ui/use-toast';
 
 export default function SignupPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<SignupFormInputs>({
     resolver: zodResolver(signupSchema), // Use Zod resolver
   });
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
+  // const [error, setError] = useState('');
+  // const [message, setMessage] = useState('');
   const router = useRouter();
 
   const handleSignup = async (data: SignupFormInputs) => {
@@ -39,13 +39,21 @@ export default function SignupPage() {
 
   const mutation = useMutation({
     mutationFn: createUser,
-    onSuccess: () => {
-      setMessage('Signup successful! Redirecting to login...');
-      setError(''); // Clear any previous errors
+    onSuccess: (data) => {
+      toast({
+        title: "Signup successful",
+        description: "Your account has been created successfully.",
+      })
+      // setError(''); // Clear any previous errors
       setTimeout(() => router.push('/login'), 2000); // Redirect to login page after a delay
     },
     onError: (err: Error) => {
-      setError(err.message);
+      toast({
+        title: "Error signing up",
+        description: err.message,
+        variant: "destructive",
+      })
+      // setError(err.message);
     }
   });
 
@@ -54,8 +62,8 @@ export default function SignupPage() {
       {/* {mutation.status === 'pending' && <p>Signing up...</p>} */}
       <div className="px-8 py-6 mt-4 text-left bg-white shadow-lg rounded-lg"> {/* Added rounded-lg */}
         <h3 className="text-2xl font-bold text-center">Sign up for an account</h3>
-        {error && <p className="text-red-500 text-center">{error}</p>}
-        {message && <p className="text-green-500 text-center">{message}</p>}
+        {/* {error && <p className="text-red-500 text-center">{error}</p>} */}
+        {/* {message && <p className="text-green-500 text-center">{message}</p>} */}
         <form onSubmit={handleSubmit(handleSignup)}>
           <div className="mt-4">
             <div>
