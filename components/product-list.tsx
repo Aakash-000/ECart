@@ -36,9 +36,9 @@ const ProductList: React.FC = () => {
             <li key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="relative h-48 w-full">
                 {product.image_url ? (
-              <Image
-                       src={product.image_url} // Construct the full image URL
-                       alt={product.image_url || 'Product Image'} // Use product name as alt text
+              <Image 
+                       src={`http://localhost:3000${product.relativeImagePath}`} // Construct the full image URL
+                       alt={product.name || 'Product Image'} // Use product name as alt text
                        layout="fill" // Or 'responsive', depending on your styling needs
                        objectFit="cover" // Or 'contain', depending on how you want the image to fit
                      />

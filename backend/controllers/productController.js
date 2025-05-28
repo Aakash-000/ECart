@@ -66,7 +66,7 @@ const ProductController = {
   
   
       const newProductId = productResult.id; // Assuming createProduct returns the new product ID
-      const imagePath = req.file.path; // Path where multer saved the image
+      const imagePath = `/uploads/images/${req.file.filename}`; // Relative path where multer saved the image
   
   
       console.log('Before calling createProductImage - newProductId:', newProductId); // Add this line
