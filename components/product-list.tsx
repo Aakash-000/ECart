@@ -64,13 +64,3 @@ const ProductList: React.FC = () => {
 };
 
 export default ProductList;
-              </div>
-            </li>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default ProductList;
