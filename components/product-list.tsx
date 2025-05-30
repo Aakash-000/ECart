@@ -2,6 +2,7 @@ import React from 'react';
 import { Product } from '../types/product';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const ProductList: React.FC = () => {
   const { data: products, isLoading, isError, error } = useQuery<Product[], Error>({
@@ -33,22 +34,36 @@ const ProductList: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product: Product) => (
-            <li key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="relative h-48 w-full">
-                {product.image_url ? (
-              <Image 
-                       src={`http://localhost:3000${product.image_url}`} // Construct the full image URL
-                       alt={product.name || 'Product Image'} // Use product name as alt text
-                       layout="fill" // Or 'responsive', depending on your styling needs
-                       objectFit="cover" // Or 'contain', depending on how you want the image to fit
-                     />
-                ) : (
-                  <div className="bg-gray-200 w-full h-full flex items-center justify-center text-gray-500">No Image</div> // Placeholder
-                )}
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
-                <p className="text-gray-700">${product.price}</p>
+            <li key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer">
+              <Link href={`/products/${product.id}`}>
+                <div>
+                  <div className="relative h-48 w-full">
+                    {product.image_url ? (
+                      <Image
+                        src={`http://localhost:3000${product.image_url}`} // Construct the full image URL
+                        alt={product.name || 'Product Image'} // Use product name as alt text
+                        layout="fill" // Or 'responsive', depending on your styling needs
+                        objectFit="cover" // Or 'contain', depending on how you want the image to fit
+                      />
+                    ) : (
+                      <div className="bg-gray-200 w-full h-full flex items-center justify-center text-gray-500">No Image</div> // Placeholder
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
+                    <p className="text-gray-700">${product.price}</p>
+                  </div>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ProductList;
               </div>
             </li>
           ))}
