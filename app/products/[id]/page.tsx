@@ -34,7 +34,7 @@ export default function ProductDetailPage({ params }) {
   console.log(params)
 
   const fetchProduct = async (id: string | number): Promise<Product> => {
-    const res = await fetch(`${process.env.NODE_PUBLIC_BASE_URL}/api/products/${id}`,{
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products/${id}`,{
       method:"GET",
       credentials:"include"
     });
