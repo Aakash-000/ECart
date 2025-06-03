@@ -24,18 +24,6 @@ interface Product {
 }
 
 
-const fetchProduct = async (id: string | number): Promise<Product> => {
-  const res = await fetch(`${process.env.NODE_PUBLIC_BASE_URL}/api/products/${id}`,{
-    method:"GET",
-    credentials:"include"
-  });
-  if (!res.ok) {
-    throw new Error("Failed to fetch product");
-  }
-  const data = await res.json();
-  return data;
-};
-
 export default function ProductDetailPage({ params }) {
   const router = useRouter();
   const { addToCart } = useCart();
@@ -44,6 +32,19 @@ export default function ProductDetailPage({ params }) {
 
   const {id} = use(params);
   console.log(params)
+
+  const fetchProduct = async (id: string | number): Promise<Product> => {
+    const res = await fetch(`${process.env.NODE_PUBLIC_BASE_URL}/api/products/${id}`,{
+      method:"GET",
+      credentials:"include"
+    });
+    if (!res.ok) {
+      throw new Error("Failed to fetch product");
+    }
+    const data = await res.json();
+    return data;
+  };
+
   const { data: product, isLoading, isError, error } = useQuery<Product>({
     queryKey: ["product", id],
     queryFn: () => fetchProduct(id),
