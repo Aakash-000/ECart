@@ -4,7 +4,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ShoppingCart, Check } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
+import { use, useState } from "react"
 import { useCart } from "@/context/cart-context"
 import { useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
@@ -44,7 +44,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const [selectedColor, setSelectedColor] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
 
-  const productId = Number(params.id);
+  const productId = use(params.id);
 
   const { data: product, isLoading, isError, error } = useQuery<Product>(
     ["product", productId],
