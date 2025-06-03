@@ -50,8 +50,10 @@ export default function ProductDetailPage({ params }) {
     console.log(res)
     const data = await res.json();
     return data;
-  };(
+  };
+  
   console.log(isError,error)
+
   console.log(product)
   const handleAddToCart = () => {
     if (!product) return;
