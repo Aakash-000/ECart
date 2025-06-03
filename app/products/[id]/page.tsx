@@ -50,7 +50,7 @@ export default function ProductDetailPage({ params }) {
     queryFn: () => fetchProduct(id),
   });
   
-
+  console.log(product)
   const handleAddToCart = () => {
     if (!product) return;
 
@@ -72,6 +72,7 @@ export default function ProductDetailPage({ params }) {
       setAddedToCart(false);
     }, 2000);
   };
+
 
   const handleBuyNow = () => {
     handleAddToCart();
