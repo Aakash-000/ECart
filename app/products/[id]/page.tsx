@@ -46,10 +46,11 @@ export default function ProductDetailPage({ params }) {
 
   const {productId} = use(params);
 
-  const { data: product, isLoading, isError, error } = useQuery<Product>(
-    ["product", productId],
-    () => fetchProduct(productId)
-  );
+  const { data: product, isLoading, isError, error } = useQuery<Product>({
+    queryKey: ["product", productId],
+    queryFn: () => fetchProduct(productId),
+  });
+  
 
   const handleAddToCart = () => {
     if (!product) return;
