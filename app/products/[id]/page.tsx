@@ -42,6 +42,7 @@ export default function ProductDetailPage({ params }) {
       throw new Error("Failed to fetch product");
     }
     const data = await res.json();
+    console.log(data)
     return data;
   };
 
