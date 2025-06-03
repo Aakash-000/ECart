@@ -33,6 +33,12 @@ export default function ProductDetailPage({ params }) {
   const {id} = use(params);
   console.log(params)
 
+
+  const { data: product, isLoading, isError, error } = useQuery<Product>({
+    queryKey: ["product", id],
+    queryFn: () => fetchProduct(id),
+  });
+
   const fetchProduct = async (id: string | number): Promise<Product> => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products/${id}`,{
       method:"GET",
@@ -45,11 +51,6 @@ export default function ProductDetailPage({ params }) {
     console.log(data)
     return data;
   };
-
-  const { data: product, isLoading, isError, error } = useQuery<Product>({
-    queryKey: ["product", id],
-    queryFn: () => fetchProduct(id),
-  });
   
   console.log(product)
   const handleAddToCart = () => {
