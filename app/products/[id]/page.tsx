@@ -38,13 +38,13 @@ const fetchProduct = async (id: string | number): Promise<Product> => {
   return data;
 };
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
+export default function ProductDetailPage({ params }) {
   const router = useRouter();
   const { addToCart } = useCart();
   const [selectedColor, setSelectedColor] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
 
-  const productId = use(params.id);
+  const {productId} = use(params);
 
   const { data: product, isLoading, isError, error } = useQuery<Product>(
     ["product", productId],
