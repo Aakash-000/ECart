@@ -44,7 +44,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const [selectedColor, setSelectedColor] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
 
-  const productId = params.id;
+  const productId = Number(params.id);
 
   const { data: product, isLoading, isError, error } = useQuery<Product>(
     ["product", productId],
