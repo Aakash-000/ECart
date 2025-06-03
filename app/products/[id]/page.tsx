@@ -50,7 +50,7 @@ export default function ProductDetailPage({ params }) {
     console.log(res)
     const data = await res.json();
     console.log(data)
-    return data;
+    // return data;
   };
   
   console.log(product)
