@@ -44,6 +44,7 @@ export default function ProductDetailPage({ params }) {
       method:"GET",
       credentials:"include"
     });
+    console.log(res)
     if (!res.ok) {
       throw new Error("Failed to fetch product");
     }
