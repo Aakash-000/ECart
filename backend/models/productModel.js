@@ -29,7 +29,7 @@ const ProductModel = {
         WHERE p.id = $1
         ORDER BY pi.order_num ASC
         LIMIT 1`, [id]);
-        console.log(result)
+        // console.log(result)
       return result.rows[0]; // Assuming ID is unique, return the first row
     } catch (err) {
       console.error('Error fetching product by ID:', err);

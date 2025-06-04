@@ -25,6 +25,7 @@ const ProductController = {
       if (product.length === 0) {
         return res.status(404).json({ error: 'Product not found.' });
       }
+      console.log("entered")
       res.json(product[0]); // Assuming getProductById returns an array with one product
     } catch (err) {
       console.error('Error in ProductController.getProductById:', err);
