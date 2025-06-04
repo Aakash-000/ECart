@@ -42,7 +42,7 @@ export default function ProductDetailPage({ params }) {
   const fetchProduct = async (id: string | number): Promise<Product> => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products/${id}`,{
       method:"GET",
-      // credentials:"include"
+      credentials:"include"
     });
     if (!res.ok) {
       throw new Error("Failed to fetch product");
@@ -210,7 +210,7 @@ export default function ProductDetailPage({ params }) {
       </div>
 
       {/* Similar Products */}
-      <div className="mt-16">
+      {/* <div className="mt-16">
         <h2 className="text-2xl font-bold mb-6">You might also like</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {similarProducts.map((product) => (
@@ -249,34 +249,34 @@ export default function ProductDetailPage({ params }) {
             </Link>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
 
-const similarProducts = [
-  {
-    id: 1,
-    name: "Wireless Earbuds, IPX8",
-    price: "89.99",
-    image: "/placeholder.svg?height=200&width=200",
-  },
-  {
-    id: 3,
-    name: "Bose BT Earphones",
-    price: "289.99",
-    image: "/placeholder.svg?height=200&width=200",
-  },
-  {
-    id: 4,
-    name: "VIVEFOX Headphones",
-    price: "39.99",
-    image: "/placeholder.svg?height=200&width=200",
-  },
-  {
-    id: 5,
-    name: "JBL TUNE 660BTNC",
-    price: "99.99",
-    image: "/placeholder.svg?height=200&width=200",
-  },
-];
+// const similarProducts = [
+//   {
+//     id: 1,
+//     name: "Wireless Earbuds, IPX8",
+//     price: "89.99",
+//     image: "/placeholder.svg?height=200&width=200",
+//   },
+//   {
+//     id: 3,
+//     name: "Bose BT Earphones",
+//     price: "289.99",
+//     image: "/placeholder.svg?height=200&width=200",
+//   },
+//   {
+//     id: 4,
+//     name: "VIVEFOX Headphones",
+//     price: "39.99",
+//     image: "/placeholder.svg?height=200&width=200",
+//   },
+//   {
+//     id: 5,
+//     name: "JBL TUNE 660BTNC",
+//     price: "99.99",
+//     image: "/placeholder.svg?height=200&width=200",
+//   },
+// ];
