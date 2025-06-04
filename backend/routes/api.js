@@ -41,31 +41,6 @@ authenticatedRouter.get('/categories', CategoryController.getAllCategories);
 const client = new paypal.core.PayPalHttpClient(environment);
 
 // Route to get all products
-authenticatedRouter.get('/products', async (req, res) => {
- try {
- const result = await pool.query('SELECT * FROM products'); // Assuming you have a 'products' table
- res.json(result.rows);
- } catch (err) {
- console.error('Error fetching products:', err);
- res.status(500).json({ error: 'An error occurred while fetching products.' });
- }
-}); // Removed duplicate route, this was likely unintended
-
- // This needs to use authenticatedRouter
-// Route to get a single product by ID
-authenticatedRouter.get('/products/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Product not found.' });
-    }
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Error fetching products:', err);
-    res.status(500).json({ error: 'An error occurred while fetching products.' });
-  }
-});
 
 
 
