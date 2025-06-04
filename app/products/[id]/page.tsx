@@ -42,7 +42,7 @@ export default function ProductDetailPage({ params }) {
   const fetchProduct = async (id: string | number): Promise<Product> => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products/${id}`,{
       method:"GET",
-      credentials:"include"
+      // credentials:"include"
     });
     if (!res.ok) {
       throw new Error("Failed to fetch product");
