@@ -20,26 +20,34 @@ const ProductController = {
 
   getProductById: async (req, res) => {
     const { id } = req.params;
+  
     try {
       const product = await ProductModel.getProductById(id);
-      if (product.length === 0) {
+  
+      if (!product || product.length === 0 || !product[0]) {
         return res.status(404).json({ error: 'Product not found.' });
       }
-      // console.log("entered")
-      // console.log(res.json(product[0]))
+  
+      // Define fields you want to exclude
+      const unwantedFields = ['created_at', 'updated_at', 'deleted_at', '__v'];
+  
+      // Safe filtering
       const filteredProduct = Object.fromEntries(
-        Object.entries(product[0]).filter(([_, value]) =>
-          ['string', 'number', 'boolean'].includes(typeof value)
+        Object.entries(product[0]).filter(
+          ([key, value]) =>
+            !unwantedFields.includes(key) &&
+            ['string', 'number', 'boolean'].includes(typeof value)
         )
       );
-            
-      res.json(filteredProduct); // Assuming getProductById returns an array with one product
+  
+      res.json(filteredProduct);
+  
     } catch (err) {
       console.error('Error in ProductController.getProductById:', err);
       res.status(500).json({ error: 'An error occurred while fetching the product.' });
     }
   },
-
+  
   createProduct : async (req, res) => {
     try {
       console.log('req.body:', req.body);
