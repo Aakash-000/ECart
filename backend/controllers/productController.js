@@ -25,9 +25,15 @@ const ProductController = {
       if (product.length === 0) {
         return res.status(404).json({ error: 'Product not found.' });
       }
-      console.log("entered")
-      console.log(res.json(product[0]))
-      res.json(product[0]); // Assuming getProductById returns an array with one product
+      // console.log("entered")
+      // console.log(res.json(product[0]))
+      const filteredProduct = Object.fromEntries(
+        Object.entries(product[0]).filter(([_, value]) =>
+          ['string', 'number', 'boolean'].includes(typeof value)
+        )
+      );
+            
+      res.json(filteredProduct); // Assuming getProductById returns an array with one product
     } catch (err) {
       console.error('Error in ProductController.getProductById:', err);
       res.status(500).json({ error: 'An error occurred while fetching the product.' });
