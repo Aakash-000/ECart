@@ -23,7 +23,7 @@ const ProductController = {
   
     try {
       const product = await ProductModel.getProductById(id);
-  
+      console.log(product[0])
       if ( product.length === 0 || !product[0]) {
         return res.status(404).json({ error: 'Product not found.' });
       }
