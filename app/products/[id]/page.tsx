@@ -29,7 +29,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const { addToCart } = useCart()
   const [addedToCart, setAddedToCart] = useState(false)
 
-  const { id } = params
+  const {id} = use(params);
 
   const { data: product, isLoading, isError, error } = useQuery<Product>({
     queryKey: ["product", id],
