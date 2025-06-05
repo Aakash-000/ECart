@@ -114,7 +114,7 @@ export default function CartPage() {
                           <div className="flex items-center sm:w-1/2 mb-4 sm:mb-0">
                             <div className="relative w-20 h-20 bg-indigo-50 rounded-xl overflow-hidden mr-4">
                               <Image
-                                  src={item.image}
+                                  src={item.image_url}
                                   alt={item.name}
                                   fill
                                   className="object-contain p-2"
