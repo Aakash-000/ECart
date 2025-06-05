@@ -239,7 +239,7 @@ export default function CartPage() {
         )}
 
         {/* Recommended Products */}
-        {items.length > 0 && (
+        {/* {items.length > 0 && (
             <div className="mt-16">
               <h2 className="section-title">You might also like</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
@@ -266,7 +266,7 @@ export default function CartPage() {
                 ))}
               </div>
             </div>
-        )}
+        )} */}
       </div>
   )
 }
