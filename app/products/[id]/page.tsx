@@ -57,7 +57,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       price: parseFloat(product.price),
       originalPrice: parseFloat(product.price), // No discount in provided data
       quantity: 1,
-      image: product.image_url, // Use single image_url
+      image_url: product.image_url, // Use single image_url
       variant: "Default", // No colors in provided data
     })
 
@@ -91,7 +91,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         <div className="lg:w-1/2">
           <div className="relative h-80 bg-gray-50 rounded-lg overflow-hidden">
             <Image
-              src={product.image_url || "/placeholder.svg"}
+              src={`http://localhost:3000${product.image_url}` || "/placeholder.svg"}
               alt={product.alt_text || product.name}
               fill
               className="object-contain p-4"

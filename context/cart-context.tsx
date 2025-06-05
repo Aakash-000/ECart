@@ -134,7 +134,7 @@ const sampleProducts: CartItem[] = [
     price: 439.0,
     originalPrice: 549.0,
     quantity: 1,
-    image: "images/products/airpods-max.png",
+    image_url: "images/products/airpods-max.png",
   },
   {
     id: 3,
@@ -142,7 +142,7 @@ const sampleProducts: CartItem[] = [
     variant: "Color: Black",
     price: 289.99,
     quantity: 1,
-    image: "images/products/bose-headphones.png",
+    image_url: "images/products/bose-headphones.png",
   },
   {
     id: 5,
@@ -150,7 +150,7 @@ const sampleProducts: CartItem[] = [
     variant: "Color: Black",
     price: 159.99,
     quantity: 1,
-    image: "images/products/jbl-headphones.png",
+    image_url: "images/products/jbl-headphones.png",
   },
 ]
 
