@@ -6,7 +6,7 @@ import { ShoppingCart, Check } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { useCart } from "@/context/cart-context"
-import { useState } from "react"
+import { use, useState } from "react"
 
 interface Product {
   id: number
