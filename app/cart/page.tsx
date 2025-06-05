@@ -113,12 +113,12 @@ export default function CartPage() {
                         <div key={item.id} className="flex flex-col sm:flex-row border-b p-6">
                           <div className="flex items-center sm:w-1/2 mb-4 sm:mb-0">
                             <div className="relative w-20 h-20 bg-indigo-50 rounded-xl overflow-hidden mr-4">
-                              <Image
-                                  src={`http://localhost:3000${item.image_url}`}
-                                  alt={item.name}
-                                  fill
-                                  className="object-contain p-2"
-                              />
+                            <Image
+  src={`http://localhost:3000${item.image_url ?? '/placeholder.png'}`}
+  alt={item.name ?? 'Product image'}
+  fill
+/>
+
                             </div>
                             <div>
                               <h3 className="font-medium">{item.name}</h3>
