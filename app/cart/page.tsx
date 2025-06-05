@@ -58,7 +58,7 @@ export default function CartPage() {
       image: "/images/products/mpow-headphones.png",
     },
   ]
-
+  console.log(isLoading)
   const handleQuantityChange = (id: number, newQuantity: number) => {
     updateQuantity(id, newQuantity)
   }
