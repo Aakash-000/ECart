@@ -22,12 +22,11 @@ const ProductController = {
     const { id } = req.params;
     try {
       const product = await ProductModel.getProductById(id);
-      if (product.length === 0) {
+      if (!product) {
         return res.status(404).json({ error: 'Product not found.' });
       }
-      console.log("entered")
-      console.log(res.json(product[0]))
-      res.json(product[0]); // Assuming getProductById returns an array with one product
+      console.log("Product:", product);
+      res.json(product); // Send the product object directly
     } catch (err) {
       console.error('Error in ProductController.getProductById:', err);
       res.status(500).json({ error: 'An error occurred while fetching the product.' });
