@@ -54,7 +54,7 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
 
     createPaymentIntent()
   }, [amount])
-
+  console.log(clientSecret)
   // Set up PaymentRequest for Apple Pay, Google Pay, etc.
   useEffect(() => {
     if (stripe) {
