@@ -38,7 +38,7 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
           credentials:"include",
           body: JSON.stringify({ amount }),
         })
-
+        console.log("Here is the error",response)
         if (!response.ok) {
           const errorData = await response.json()
           throw new Error(errorData.error || "Failed to create payment intent")
@@ -158,7 +158,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       credentials:"include",
       body: JSON.stringify({ amount }), // Send amount or any other necessary data
     });
-
+    console.log("Here is the error",response)
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || "Failed to create payment intent");
