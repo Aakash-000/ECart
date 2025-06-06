@@ -13,7 +13,7 @@ import { useCart } from "@/context/cart-context"
 import PayPalButton from "@/components/payment-methods/paypal-button"
 import { useRouter } from "next/navigation"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import useBillingStore from "@/store/billingStore"
+import {useBillingStore} from "@/store/billingStore"
 
 export default function PaymentPage() {
   const router = useRouter()
