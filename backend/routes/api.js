@@ -14,7 +14,7 @@ const  CategoryController  = require('../controllers/categoryController');
 const multer = require('multer');
 
 // Import Stripe library
-const stripe = require('stripe')(`${process.env.STRIPE_SECRET_KEY}`); // Replace with your actual Stripe Secret Key
+const stripe = require('stripe')('sk_test_51RKMShQk4GZEsTMa6GrjEtv4SUn8pF7gbvQO37makh8EuzzopkPZ0JgOMYrIWSmOhlTdJ5AALJv0UcPc000zn5h800aVOzQqJs'); // Replace with your actual Stripe Secret Key
 
 
 // Configure PayPal Client
