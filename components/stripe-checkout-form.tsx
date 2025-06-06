@@ -204,9 +204,8 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
         },
       });
       console.log(orderId)
-      if (stripeError) {
-        setError(stripeError.message || "An error occurred during payment confirmation");
-      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+
+      if (paymentIntent && paymentIntent.status === "succeeded") {
         console.log("Payment successful:", paymentIntent);
   
         // Assuming you have the necessary order details available here
@@ -216,11 +215,41 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
             total: (amount / 100).toFixed(2), // Use the amount
             paymentMethod: "Credit Card", // Or dynamically get the payment method
             items: [], // Populate with actual items from the cart/order
+            // Add shipping address details
+            shippingAddress: {
+                line1: address1,
+                city: city,
+                state: state,
+                postal_code: zipCode,
+            }
         };
-        addOrderToHistory(newOrder); // Add to history
-  
-        router.push(`/payment-success?orderId=${orderId}`); // Redirect with orderId
-      } else {
+
+        // 2. Call backend endpoint to finalize the order and get the orderId
+        const finalizeResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/finalize`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            paymentIntentId: paymentIntent.id, // Send the Stripe Payment Intent ID
+            orderData: newOrder, // Send the order data
+          }),
+        });
+
+        if (!finalizeResponse.ok) {
+            const errorData = await finalizeResponse.json();
+            throw new Error(errorData.message || "Failed to finalize order on backend");
+        }
+
+        const finalizedOrder = await finalizeResponse.json();
+        const backendOrderId = finalizedOrder.id; // Get the orderId from the backend's finalized order response
+
+        // Add to history using the backend orderId
+        addOrderToHistory({...newOrder, orderNumber: finalizedOrder.orderNumber });
+
+        router.push(`/payment-success?orderId=${backendOrderId}`); // Redirect with the actual backend orderId
+      } else if (stripeError) {
         console.log("Payment Intent status:", paymentIntent?.status);
         setError("Payment not successful. Please try again.");
       }

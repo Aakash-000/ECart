@@ -41,9 +41,78 @@ const createOrder = async (req, res) => {
   }
 };
 
+// @desc    Finalize order after successful payment
+// @route   POST /api/orders/finalize
+// @access  Private (adjust access based on your authentication)
+const finalizeOrder = async (req, res) => {
+  // Extract payment intent ID and order data from the request body
+  const { paymentIntentId, orderData } = req.body;
+
+  try {
+    // Call the model function to create the order in the database
+    const createdOrder = await OrderModel.createOrder(orderData);
+
+    // Return the created order including its ID
+    res.status(201).json(createdOrder);
+
+  } catch (error) {
+    console.error('Error finalizing order:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Add other controller functions for updating, deleting orders, etc.
 
 module.exports = {
   getOrderById,
   createOrder,
+  finalizeOrder,
 };
+
+
+// backend/controllers/orderController.js
+
+// const finalizeOrder = async (req, res) => {
+//     try {
+//       // TODO: Extract order data from req.body
+//       const { items, shippingAddress, paymentIntentId, total } = req.body; // Example of expected data
+
+//       // You might also want to get the user ID from the authenticated user (req.user)
+
+//       // TODO: Validate the received data
+
+//       // TODO: Generate a unique order number
+//       const orderNumber = generateUniqueOrderNumber();
+
+//       const orderData = {
+//         orderNumber,
+//         items,
+//         shippingAddress,
+//         // TODO: Get payment method from paymentIntent or req.body
+//         paymentMethod: 'Stripe', // Placeholder
+//         total,
+//         // TODO: Add user ID if applicable
+//         // user: req.user._id,
+//       };
+
+//       const createdOrder = await OrderModel.createOrder(orderData);
+
+//       res.status(201).json(createdOrder);
+
+//     } catch (error) {
+//       console.error('Error finalizing order:', error);
+//       res.status(500).json({ message: 'Internal server error' });
+//     }
+//   };
+
+//   // TODO: Implement generateUniqueOrderNumber function
+//   function generateUniqueOrderNumber() {
+//     // Implement your logic to generate a unique order number
+//     return `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+//   }
+
+//   module.exports = {
+//     getOrderById,
+//     createOrder, // You might not need to expose this if orders are only created via finalizeOrder
+//     finalizeOrder,
+//   };

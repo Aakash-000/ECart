@@ -14,6 +14,7 @@ const  CategoryController  = require('../controllers/categoryController');
 const {
   getOrderById,
   createOrder,
+  finalizeOrder,
 } = require('../controllers/orderController');
 const multer = require('multer');
 require('dotenv').config();
@@ -38,6 +39,7 @@ authenticatedRouter.post('/products', upload.single('image'), ProductController.
 
 authenticatedRouter.get('/orders/:orderId', getOrderById);
 authenticatedRouter.post('/orders', createOrder);
+authenticatedRouter.post('/orders/finalize', finalizeOrder);
 
 
 // Route to add a new category
