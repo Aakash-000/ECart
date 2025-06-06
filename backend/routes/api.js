@@ -13,6 +13,10 @@ const ProductController = require('../controllers/productController');
 const  CategoryController  = require('../controllers/categoryController');
 const multer = require('multer');
 
+// Import Stripe library
+const stripe = require('stripe')(`${process.env.STRIPE_SECRET_KEY}`); // Replace with your actual Stripe Secret Key
+
+
 // Configure PayPal Client
 // Replace with your actual PayPal Client ID and Client Secret
 
@@ -49,9 +53,19 @@ authenticatedRouter.get('/capture-paypal-order', (req, res) => {
 });
 
 authenticatedRouter.post('/create-payment-intent', (req, res) => {
-  res.json({ message: 'create-payment-intent route' });
+  const { amount } = req.body;
+
+  stripe.paymentIntents.create({
+    amount: amount,
+    currency: 'usd',
+  })
+  .then(paymentIntent => {
+    res.json({ clientSecret: paymentIntent.client_secret });
+  })
+  .catch(err => {
+    res.status(500).json({ error: err.message });
+  });
 });
-// Route for user logout
 // New route to get authenticated user data
 authenticatedRouter.get('/user', (req, res) => {
   res.status(200).json({ user: req.user });
