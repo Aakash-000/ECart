@@ -197,6 +197,17 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     const { paymentIntent, error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
+ billing_details: {
+ name: `${firstName} ${lastName}`,
+ email: emailInputRef.current?.value,
+ address: {
+ line1: address1,
+ line2: address2,
+ city: city,
+ state: state,
+ postal_code: zipCode,
+ },
+ },
         card: cardElement,
       },
     });

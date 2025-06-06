@@ -53,27 +53,11 @@ authenticatedRouter.get('/capture-paypal-order', (req, res) => {
 });
 
 authenticatedRouter.post('/create-payment-intent', (req, res) => {
-  const { amount, billingDetails } = req.body;
+  const { amount } = req.body;
 
   stripe.paymentIntents.create({
     amount: amount,
     currency: 'usd',
-    // Include billing details in the payment method options
-    payment_method_options: {
-      card: {
-        billing_details: {
-          name: billingDetails.name,
-          email: billingDetails.email,
-          address: {
-            line1: billingDetails.address1,
- line2: billingDetails.address2,
- city: billingDetails.city,
- state: billingDetails.state,
- postal_code: billingDetails.zipCode
- }
- }
- },
- },
   })
   .then(paymentIntent => {
     res.json({ clientSecret: paymentIntent.client_secret });
