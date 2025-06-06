@@ -11,6 +11,10 @@ const { isAuthenticated, verifyJWT } = require('../middleware/authMiddleware');
 const UserController = require('../controllers/userController');
 const ProductController = require('../controllers/productController');
 const  CategoryController  = require('../controllers/categoryController');
+const {
+  getOrderById,
+  createOrder,
+} = require('../controllers/orderController');
 const multer = require('multer');
 require('dotenv').config();
 // Import Stripe library
@@ -32,6 +36,8 @@ console.log('Hit /api/products/upload route');
 // New route for image upload
 authenticatedRouter.post('/products', upload.single('image'), ProductController.createProduct);
 
+authenticatedRouter.get('/orders/:orderId', getOrderById);
+authenticatedRouter.post('/orders', createOrder);
 
 
 // Route to add a new category

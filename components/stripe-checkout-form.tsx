@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import type { StripeCardElementChangeEvent } from "@stripe/stripe-js"
 import { useRouter } from "next/navigation"
 import {useBillingStore} from "@/store/billingStore"
+import { useOrderHistoryStore } from "@/store/orderHistoryStore"; // Import the store
 
 interface StripeCheckoutFormProps {
   amount: number
@@ -31,6 +32,8 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
   const nameInputRef = useRef<HTMLInputElement>(null)
   const emailInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter();
+  const addOrderToHistory = useOrderHistoryStore((state) => state.addOrder);
+
   // Format amount for display
   const formattedAmount = (amount / 100).toFixed(2)
   // console.log(address1,address2,city,state,zipCode)
@@ -184,9 +187,9 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
           return;
       }
   
-      const { paymentIntent, error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
+      const { paymentIntent, error: stripeError, orderId } = await stripe.confirmCardPayment(clientSecret, { // Assuming orderId is returned here
         payment_method: {
-          card: cardElement, // <--- Use the instance here
+          card: cardElement,
           billing_details: {
             name: `${firstName} ${lastName}`,
             email: emailInputRef.current?.value,
@@ -205,7 +208,18 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
         setError(stripeError.message || "An error occurred during payment confirmation");
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
         console.log("Payment successful:", paymentIntent);
-        router.push("/payment-success"); // Example redirection
+  
+        // Assuming you have the necessary order details available here
+        const newOrder = {
+            orderNumber: orderId, // Use the orderId from the backend
+            date: new Date().toISOString(), // Use current date or date from backend
+            total: (amount / 100).toFixed(2), // Use the amount
+            paymentMethod: "Credit Card", // Or dynamically get the payment method
+            items: [], // Populate with actual items from the cart/order
+        };
+        addOrderToHistory(newOrder); // Add to history
+  
+        router.push(`/payment-success?orderId=${orderId}`); // Redirect with orderId
       } else {
         console.log("Payment Intent status:", paymentIntent?.status);
         setError("Payment not successful. Please try again.");
