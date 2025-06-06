@@ -27,32 +27,32 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
   const formattedAmount = (amount / 100).toFixed(2)
 
   // Create PaymentIntent as soon as the page loads
-  useEffect(() => {
-    async function createPaymentIntent() {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/create-payment-intent`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ amount }),
-        })
+  // useEffect(() => {
+  //   async function createPaymentIntent() {
+  //     try {
+  //       const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/create-payment-intent`, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ amount }),
+  //       })
 
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.error || "Failed to create payment intent")
-        }
+  //       if (!response.ok) {
+  //         const errorData = await response.json()
+  //         throw new Error(errorData.error || "Failed to create payment intent")
+  //       }
 
-        const data = await response.json()
-        setClientSecret(data.clientSecret)
-      } catch (err: any) {
-        setError(err.message || "An unexpected error occurred")
-        console.error(err)
-      }
-    }
+  //       const data = await response.json()
+  //       setClientSecret(data.clientSecret)
+  //     } catch (err: any) {
+  //       setError(err.message || "An unexpected error occurred")
+  //       console.error(err)
+  //     }
+  //   }
 
-    createPaymentIntent()
-  }, [amount])
+  //   createPaymentIntent()
+  // }, [amount])
 
   // Set up PaymentRequest for Apple Pay, Google Pay, etc.
   useEffect(() => {
