@@ -30,7 +30,7 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
   useEffect(() => {
     async function createPaymentIntent() {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/create-payment-intent`, {
+        const response = await fetch(`/api/create-payment-intent`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
