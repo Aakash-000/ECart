@@ -27,33 +27,33 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
   const formattedAmount = (amount / 100).toFixed(2)
 
   // Create PaymentIntent as soon as the page loads
-  // useEffect(() => {
-  //   async function createPaymentIntent() {
-  //     try {
-  //       const response = await fetch(`/api/create-payment-intent`, {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         credentials:"include",
-  //         body: JSON.stringify({ amount }),
-  //       })
-  //       console.log("Here is the error",response)
-  //       if (!response.ok) {
-  //         const errorData = await response.json()
-  //         throw new Error(errorData.error || "Failed to create payment intent")
-  //       }
+  useEffect(() => {
+    async function createPaymentIntent() {
+      try {
+        const response = await fetch(`/api/create-payment-intent`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials:"include",
+          body: JSON.stringify({ amount }),
+        })
+        console.log("Here is the error",response)
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || "Failed to create payment intent")
+        }
 
-  //       const data = await response.json()
-  //       setClientSecret(data.clientSecret)
-  //     } catch (err: any) {
-  //       setError(err.message || "An unexpected error occurred")
-  //       console.error(err)
-  //     }
-  //   }
+        const data = await response.json()
+        setClientSecret(data.clientSecret)
+      } catch (err: any) {
+        setError(err.message || "An unexpected error occurred")
+        console.error(err)
+      }
+    }
 
-  //   createPaymentIntent()
-  // }, [amount])
+    createPaymentIntent()
+  }, [amount])
 
   // Set up PaymentRequest for Apple Pay, Google Pay, etc.
   useEffect(() => {
