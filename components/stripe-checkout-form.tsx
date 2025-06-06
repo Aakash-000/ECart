@@ -119,7 +119,7 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
       })
     }
   }, [stripe, amount, clientSecret])
-  console.log(clientSecret)
+
   const cardStyle = {
     style: {
       base: {
@@ -174,8 +174,8 @@ const handleSubmit = async (e: React.FormEvent) => {
       const errorData = await response.json();
       throw new Error(errorData.error || "Failed to create payment intent");
     }
-
-    const { paymentIntent, error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
+      const abc = await response.json()
+    const { paymentIntent, error: stripeError } = await stripe.confirmCardPayment(abc.client_secret, {
       payment_method: {
  billing_details: {
  name: `${firstName} ${lastName}`,
