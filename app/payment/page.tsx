@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,6 +13,7 @@ import { useCart } from "@/context/cart-context"
 import PayPalButton from "@/components/payment-methods/paypal-button"
 import { useRouter } from "next/navigation"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import useBillingStore from "@/store/billingStore"
 
 export default function PaymentPage() {
   const router = useRouter()
@@ -24,16 +25,10 @@ export default function PaymentPage() {
   } | null>(null)
   const stripePromise = getStripe()
   const { state } = useCart()
-
-  // Refs for billing address fields
-  const firstNameRef = useRef<HTMLInputElement>(null);
-  const lastNameRef = useRef<HTMLInputElement>(null);
-  const stateRef = useRef<HTMLInputElement>(null);
-  const zipCodeRef = useRef<HTMLInputElement>(null);
-  const address1Ref = useRef<HTMLInputElement>(null);
-  const address2Ref = useRef<HTMLInputElement>(null);
-  const cityRef = useRef<HTMLInputElement>(null);
   const { items, subtotal, discount, shipping, tax, total } = state
+
+  // Access billing store actions
+  const { setBillingDetails } = useBillingStore();
 
   // Convert total to cents for Stripe
   const amountInCents = Math.round(total * 100)
@@ -120,14 +115,7 @@ export default function PaymentPage() {
                       }}
                     >
                       <StripeCheckoutForm
-                        amount={amountInCents}
-                        firstNameRef={firstNameRef}
-                        lastNameRef={lastNameRef}
-                        address1Ref={address1Ref}
-                        address2Ref={address2Ref}
-                        cityRef={cityRef}
-                        stateRef={stateRef}
-                        zipCodeRef={zipCodeRef}
+                        amount={amountInCents} // Still pass amount as it's not billing detail
                       />
 
                     </Elements>
@@ -152,7 +140,7 @@ export default function PaymentPage() {
                     <input
                       type="text"
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      ref={firstNameRef}
+                      onChange={(e) => setBillingDetails({ firstName: e.target.value })}
                     />
                   </div>
                   <div>
@@ -160,7 +148,7 @@ export default function PaymentPage() {
                     <input
                       type="text"
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      ref={lastNameRef}
+                      onChange={(e) => setBillingDetails({ lastName: e.target.value })}
                     />
                   </div>
                 </div>
@@ -170,7 +158,7 @@ export default function PaymentPage() {
                   <input
                     type="text"
                     className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    ref={address1Ref}
+                    onChange={(e) => setBillingDetails({ address1: e.target.value })}
                   />
                 </div>
 
@@ -179,7 +167,7 @@ export default function PaymentPage() {
                   <input
                     type="text"
                     className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    ref={address2Ref}
+                    onChange={(e) => setBillingDetails({ address2: e.target.value })}
                   />
                 </div>
 
@@ -189,7 +177,7 @@ export default function PaymentPage() {
                     <input
                       type="text"
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      ref={cityRef}
+                      onChange={(e) => setBillingDetails({ city: e.target.value })}
                     />
                   </div>
                   <div>
@@ -198,7 +186,7 @@ export default function PaymentPage() {
                       type="text"
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       // Add ref for State if needed
-                      ref={stateRef}
+                      onChange={(e) => setBillingDetails({ state: e.target.value })}
                     />
                   </div>
                   <div>
@@ -206,6 +194,7 @@ export default function PaymentPage() {
                     <input
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       // Add ref for Zip Code if needed
+                      onChange={(e) => setBillingDetails({ zipCode: e.target.value })}
                     />
                   </div>
                 </div>

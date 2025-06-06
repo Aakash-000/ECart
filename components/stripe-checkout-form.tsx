@@ -6,6 +6,7 @@ import { CardElement, useStripe, useElements, PaymentRequestButtonElement } from
 import { Button } from "@/components/ui/button"
 import type { StripeCardElementChangeEvent } from "@stripe/stripe-js"
 import { useRouter } from "next/navigation"
+import {useBillingStore} from "@/store/billingStore"
 
 interface StripeCheckoutFormProps {
   amount: number
@@ -18,7 +19,7 @@ interface StripeCheckoutFormProps {
   zipCode: string;
 }
 
-export default function StripeCheckoutForm({ amount = 83400, firstName, lastName, address1, address2, city, state, zipCode }: StripeCheckoutFormProps) {
+export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFormProps) {
   const stripe = useStripe()
   const elements = useElements()
   const [error, setError] = useState<string | null>(null)
@@ -29,10 +30,10 @@ export default function StripeCheckoutForm({ amount = 83400, firstName, lastName
   const[isLoading, setIsLoading] = useState<boolean>(false)
   const nameInputRef = useRef<HTMLInputElement>(null)
   const emailInputRef = useRef<HTMLInputElement>(null)
-  const router = useRouter()
+  const router = useRouter();
   // Format amount for display
   const formattedAmount = (amount / 100).toFixed(2)
-  console.log(address1,address2,city,state,zipCode)
+  // console.log(address1,address2,city,state,zipCode)
   // Create PaymentIntent as soon as the page loads
   // useEffect(() => {
   //   async function createPaymentIntent() {
@@ -144,6 +145,7 @@ export default function StripeCheckoutForm({ amount = 83400, firstName, lastName
   // ... other imports and state variables ...
 
 const handleSubmit = async (e: React.FormEvent) => {
+  const { firstName, lastName, address1, address2, city, state, zipCode } = useBillingStore.getState();
   e.preventDefault();
 
   if (!stripe || !elements) {
@@ -165,34 +167,12 @@ const handleSubmit = async (e: React.FormEvent) => {
       credentials:"include",
       body: JSON.stringify({
         amount, // Send amount or any other necessary data
-        billingDetails: {
-          name: nameInputRef.current?.value,
-          email: emailInputRef.current?.value,
-          address: {
-            line1: address1,
-            line2: address2,
-            city: city,
-            state: state,
-            postal_code: zipCode,
-            country: 'US', // Assuming US for now, you might want to make this dynamic
-          }
-        },
       }),
     });
     console.log("Here is the error",response)
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || "Failed to create payment intent");
-    }
-
-    const data = await response.json();
-    const clientSecret = data.clientSecret;
-
-    // 2. Confirm card payment with the obtained client secret
-    const cardElement = elements.getElement(CardElement);
-
-    if (!cardElement) {
-      throw new Error("Card element not found");
     }
 
     const { paymentIntent, error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
@@ -208,7 +188,7 @@ const handleSubmit = async (e: React.FormEvent) => {
  postal_code: zipCode,
  },
  },
-        card: cardElement,
+        card: CardElement,
       },
     });
 
