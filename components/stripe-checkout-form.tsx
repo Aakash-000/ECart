@@ -35,6 +35,7 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
           headers: {
             "Content-Type": "application/json",
           },
+          credentials:"include",
           body: JSON.stringify({ amount }),
         })
 
@@ -154,6 +155,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials:"include",
       body: JSON.stringify({ amount }), // Send amount or any other necessary data
     });
 
