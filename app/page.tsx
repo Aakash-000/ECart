@@ -69,15 +69,15 @@ export default function Home() {
         {/* Conditional rendering based on authentication */}
 
         {/* Featured Products Section */}
-        <div className="mt-16">
+        {/* <div className="mt-16">
           <div className="flex justify-between items-center mb-8">
             <h2 className="section-title">Headphones For You!</h2>
             <Link href="/products" className="text-indigo-600 font-medium flex items-center hover:underline">
               View All
             </Link>
-          </div>
+          </div> */}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
                 <Link href={`/products/${product.id}`} key={product.id}>
                   <div className="product-card rounded-2xl overflow-hidden group">
@@ -134,8 +134,7 @@ export default function Home() {
                   </div>
                 </Link>
             ))}
-          </div>
-        </div>
+          </div> */}
       </>
   )
 }
