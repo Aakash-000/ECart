@@ -32,7 +32,7 @@ export default function StripeCheckoutForm({ amount = 83400, firstName, lastName
   const router = useRouter()
   // Format amount for display
   const formattedAmount = (amount / 100).toFixed(2)
-
+  console.log(address1,address2,city,state,zipCode)
   // Create PaymentIntent as soon as the page loads
   // useEffect(() => {
   //   async function createPaymentIntent() {
