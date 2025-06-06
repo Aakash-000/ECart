@@ -142,75 +142,84 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
     setError(event.error ? event.error.message : "")
   }
 
-  // ... other imports and state variables ...
-
-const handleSubmit = async (e: React.FormEvent) => {
-  const { firstName, lastName, address1, address2, city, state, zipCode } = useBillingStore.getState();
-  e.preventDefault();
-
-  if (!stripe || !elements) {
-    // Stripe.js hasn't yet loaded.
-    // Disable form submission until Stripe.js has loaded.
-    return;
-  }
-
-  setIsLoading(true);
-  setError(null); // Clear previous errors
-
-  try {
-    // 1. Create PaymentIntent on form submission
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/create-payment-intent`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials:"include",
-      body: JSON.stringify({
-        amount, // Send amount or any other necessary data
-      }),
-    });
-    console.log("Here is the error",response)
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to create payment intent");
+  const handleSubmit = async (e: React.FormEvent) => {
+    const { firstName, lastName, address1, address2, city, state, zipCode } = useBillingStore.getState();
+    e.preventDefault();
+  
+    if (!stripe || !elements) {
+      // Stripe.js hasn't yet loaded.
+      return;
     }
-      const finalResponse = await response.json()
-    const { paymentIntent, error: stripeError } = await stripe.confirmCardPayment(finalResponse.clientSecret, {
-      payment_method: {
- billing_details: {
- name: `${firstName} ${lastName}`,
- email: emailInputRef.current?.value,
- address: {
- line1: address1,
- line2: address2,
- city: city,
- state: state,
- postal_code: zipCode,
- },
- },
-        card: CardElement,
-      },
-    });
-
-    if (stripeError) {
-      setError(stripeError.message || "An error occurred during payment confirmation");
-    } else if (paymentIntent && paymentIntent.status === "succeeded") {
-      // Payment succeeded, handle success (e.g., redirect to success page)
-      console.log("Payment successful:", paymentIntent);
-      router.push("/payment-success"); // Example redirection
-    } else {
-      // Handle other payment intent statuses if needed
-      console.log("Payment Intent status:", paymentIntent?.status);
-      setError("Payment not successful. Please try again.");
+  
+    setIsLoading(true);
+    setError(null); // Clear previous errors
+  
+    try {
+      // 1. Create PaymentIntent on form submission
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/create-payment-intent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials:"include",
+        body: JSON.stringify({
+          amount, // Send amount or any other necessary data
+        }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create payment intent");
+      }
+  
+      const finalResponse = await response.json();
+      const clientSecret = finalResponse.clientSecret; // Get clientSecret from the response
+  
+      // Get the CardElement instance from the elements object
+      const cardElement = elements.getElement(CardElement);
+  
+      if (!cardElement) {
+          setError("Card Element not found");
+          setIsLoading(false);
+          return;
+      }
+  
+      const { paymentIntent, error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement, // <--- Use the instance here
+          billing_details: {
+            name: `${firstName} ${lastName}`,
+            email: emailInputRef.current?.value,
+            address: {
+              line1: address1,
+              line2: address2,
+              city: city,
+              state: state,
+              postal_code: zipCode,
+            },
+          },
+        },
+      });
+  
+      if (stripeError) {
+        setError(stripeError.message || "An error occurred during payment confirmation");
+      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        console.log("Payment successful:", paymentIntent);
+        router.push("/payment-success"); // Example redirection
+      } else {
+        console.log("Payment Intent status:", paymentIntent?.status);
+        setError("Payment not successful. Please try again.");
+      }
+  
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
+  };
+  
 
-  } catch (err: any) {
-    setError(err.message || "An unexpected error occurred");
-    console.error(err);
-  } finally {
-    setIsLoading(false);
-  }
-};
 
 // ... rest of the component ...
 
