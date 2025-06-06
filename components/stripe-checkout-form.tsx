@@ -175,6 +175,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       throw new Error(errorData.error || "Failed to create payment intent");
     }
       const abc = await response.json()
+      console.log(abc)
     const { paymentIntent, error: stripeError } = await stripe.confirmCardPayment(abc.client_secret, {
       payment_method: {
  billing_details: {
