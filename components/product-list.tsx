@@ -88,9 +88,9 @@ const ProductList: React.FC = () => {
             </div>
             <span className="text-xs text-gray-500 ml-1">({product.reviews || 0})</span>
           </div>
-          <button className="w-full mt-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md py-2 transition-colors">
+          {/* <button className="w-full mt-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md py-2 transition-colors">
             Add to Cart
-          </button>
+          </button> */}
         </div>
       </div>
     </Link>
