@@ -9,9 +9,16 @@ import { useRouter } from "next/navigation"
 
 interface StripeCheckoutFormProps {
   amount: number
+  firstName: string;
+  lastName: string;
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
+  zipCode: string;
 }
 
-export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFormProps) {
+export default function StripeCheckoutForm({ amount = 83400, firstName, lastName, address1, address2, city, state, zipCode }: StripeCheckoutFormProps) {
   const stripe = useStripe()
   const elements = useElements()
   const [error, setError] = useState<string | null>(null)
@@ -156,7 +163,21 @@ const handleSubmit = async (e: React.FormEvent) => {
         "Content-Type": "application/json",
       },
       credentials:"include",
-      body: JSON.stringify({ amount }), // Send amount or any other necessary data
+      body: JSON.stringify({
+        amount, // Send amount or any other necessary data
+        billingDetails: {
+          name: nameInputRef.current?.value,
+          email: emailInputRef.current?.value,
+          address: {
+            line1: address1,
+            line2: address2,
+            city: city,
+            state: state,
+            postal_code: zipCode,
+            country: 'US', // Assuming US for now, you might want to make this dynamic
+          }
+        },
+      }),
     });
     console.log("Here is the error",response)
     if (!response.ok) {

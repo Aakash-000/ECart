@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,6 +24,15 @@ export default function PaymentPage() {
   } | null>(null)
   const stripePromise = getStripe()
   const { state } = useCart()
+
+  // Refs for billing address fields
+  const firstNameRef = useRef<HTMLInputElement>(null);
+  const lastNameRef = useRef<HTMLInputElement>(null);
+  const stateRef = useRef<HTMLInputElement>(null);
+  const zipCodeRef = useRef<HTMLInputElement>(null);
+  const address1Ref = useRef<HTMLInputElement>(null);
+  const address2Ref = useRef<HTMLInputElement>(null);
+  const cityRef = useRef<HTMLInputElement>(null);
   const { items, subtotal, discount, shipping, tax, total } = state
 
   // Convert total to cents for Stripe
@@ -110,7 +119,17 @@ export default function PaymentPage() {
                         currency: "usd",
                       }}
                     >
-                      <StripeCheckoutForm amount={amountInCents} />
+                      <StripeCheckoutForm
+                        amount={amountInCents}
+                        firstNameRef={firstNameRef}
+                        lastNameRef={lastNameRef}
+                        address1Ref={address1Ref}
+                        address2Ref={address2Ref}
+                        cityRef={cityRef}
+                        stateRef={stateRef}
+                        zipCodeRef={zipCodeRef}
+                      />
+
                     </Elements>
                   )}
                 </TabsContent>
@@ -133,6 +152,7 @@ export default function PaymentPage() {
                     <input
                       type="text"
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      ref={firstNameRef}
                     />
                   </div>
                   <div>
@@ -140,6 +160,7 @@ export default function PaymentPage() {
                     <input
                       type="text"
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      ref={lastNameRef}
                     />
                   </div>
                 </div>
@@ -149,6 +170,7 @@ export default function PaymentPage() {
                   <input
                     type="text"
                     className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    ref={address1Ref}
                   />
                 </div>
 
@@ -157,6 +179,7 @@ export default function PaymentPage() {
                   <input
                     type="text"
                     className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    ref={address2Ref}
                   />
                 </div>
 
@@ -166,6 +189,7 @@ export default function PaymentPage() {
                     <input
                       type="text"
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      ref={cityRef}
                     />
                   </div>
                   <div>
@@ -173,13 +197,15 @@ export default function PaymentPage() {
                     <input
                       type="text"
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      // Add ref for State if needed
+                      ref={stateRef}
                     />
                   </div>
                   <div>
                     <label className="block text-sm text-gray-600 mb-1">Zip Code</label>
                     <input
-                      type="text"
                       className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      // Add ref for Zip Code if needed
                     />
                   </div>
                 </div>
