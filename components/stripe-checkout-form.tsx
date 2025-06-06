@@ -1,10 +1,11 @@
 "use client"
 
-import type React from "react"
+import React, { useRef } from "react"
 import { useState, useEffect } from "react"
 import { CardElement, useStripe, useElements, PaymentRequestButtonElement } from "@stripe/react-stripe-js"
 import { Button } from "@/components/ui/button"
 import type { StripeCardElementChangeEvent } from "@stripe/stripe-js"
+import { useRouter } from "next/navigation"
 
 interface StripeCheckoutFormProps {
   amount: number
@@ -18,7 +19,10 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
   const [succeeded, setSucceeded] = useState<boolean>(false)
   const [paymentRequest, setPaymentRequest] = useState<any>(null)
   const [clientSecret, setClientSecret] = useState<string>("")
-
+  const[isLoading, setIsLoading] = useState<boolean>(false)
+  const nameInputRef = useRef<HTMLInputElement>(null)
+  const emailInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
   // Format amount for display
   const formattedAmount = (amount / 100).toFixed(2)
 
@@ -26,7 +30,7 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
   useEffect(() => {
     async function createPaymentIntent() {
       try {
-        const response = await fetch("/api/create-payment-intent", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/create-payment-intent`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -129,48 +133,73 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
     setError(event.error ? event.error.message : "")
   }
 
-  const handleSubmit = async (ev: React.FormEvent) => {
-    ev.preventDefault()
-    setProcessing(true)
+  // ... other imports and state variables ...
 
-    if (!stripe || !elements || !clientSecret) {
-      setProcessing(false)
-      return
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!stripe || !elements) {
+    // Stripe.js hasn't yet loaded.
+    // Disable form submission until Stripe.js has loaded.
+    return;
+  }
+
+  setIsLoading(true);
+  setError(null); // Clear previous errors
+
+  try {
+    // 1. Create PaymentIntent on form submission
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/create-payment-intent`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount }), // Send amount or any other necessary data
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to create payment intent");
     }
 
-    const cardElement = elements.getElement(CardElement)
+    const data = await response.json();
+    const clientSecret = data.clientSecret;
+
+    // 2. Confirm card payment with the obtained client secret
+    const cardElement = elements.getElement(CardElement);
 
     if (!cardElement) {
-      setProcessing(false)
-      return
+      throw new Error("Card element not found");
     }
 
-    try {
-      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {
-            // You can add billing details here if needed
-          },
-        },
-      })
+    const { paymentIntent, error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement,
+      },
+    });
 
-      if (error) {
-        setError(error.message || "An error occurred")
-      } else if (paymentIntent.status === "succeeded") {
-        setSucceeded(true)
-        // Redirect to success page after a short delay
-        setTimeout(() => {
-          window.location.href = "/payment-success"
-        }, 2000)
-      }
-    } catch (err: any) {
-      setError("An unexpected error occurred")
-      console.error(err)
+    if (stripeError) {
+      setError(stripeError.message || "An error occurred during payment confirmation");
+    } else if (paymentIntent && paymentIntent.status === "succeeded") {
+      // Payment succeeded, handle success (e.g., redirect to success page)
+      console.log("Payment successful:", paymentIntent);
+      router.push("/payment-success"); // Example redirection
+    } else {
+      // Handle other payment intent statuses if needed
+      console.log("Payment Intent status:", paymentIntent?.status);
+      setError("Payment not successful. Please try again.");
     }
 
-    setProcessing(false)
+  } catch (err: any) {
+    setError(err.message || "An unexpected error occurred");
+    console.error(err);
+  } finally {
+    setIsLoading(false);
   }
+};
+
+// ... rest of the component ...
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -201,6 +230,7 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-green-500"
+              ref={nameInputRef}
               placeholder="John Doe"
             />
           </div>
@@ -209,6 +239,7 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
             <input
               type="email"
               className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-green-500"
+              ref={emailInputRef}
               placeholder="john.doe@example.com"
             />
           </div>
