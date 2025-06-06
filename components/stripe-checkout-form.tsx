@@ -203,7 +203,7 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
           },
         },
       });
-  
+      console.log(orderId)
       if (stripeError) {
         setError(stripeError.message || "An error occurred during payment confirmation");
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
