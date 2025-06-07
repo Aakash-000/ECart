@@ -54,7 +54,7 @@ const createOrder = async (req, res) => {
   const orderData = req.body; // Assuming order data is in the request body
 
   try {
-    const createdOrder = await OrderModel.createOrder(orderData); // Call the SQL-based model function
+    const createdOrder = await OrderModel.createOrder({orderData,user_id:req.user.id}); // Call the SQL-based model function
 
     res.status(201).json(createdOrder); // 201 for resource created
 
