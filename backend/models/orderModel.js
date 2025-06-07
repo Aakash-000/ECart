@@ -45,7 +45,7 @@ const OrderModel = {
 
       const createdOrder = result.rows[0];
       const orderId = createdOrder.id;
-
+      console.log(createdOrder)
       // Insert order items (assuming you have an order_items table)
       if (items && items.length > 0) {
         const itemQueries = items.map(item =>
