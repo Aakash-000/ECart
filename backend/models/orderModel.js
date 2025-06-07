@@ -33,14 +33,14 @@ const OrderModel = {
    * @returns {Promise<object>} A promise that resolves with the created order's data.
    */
   async createOrder(orderData) {
-    const { items, shippingAddress, paymentMethod, total } = orderData;
+    const { items, shippingAddress, paymentMethod, total,user_id } = orderData;
     const order_number = `ORDER-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`; // Generate a unique order number
 
     try {
       // Insert the main order details
       const result = await pool.query(
-        'INSERT INTO orders (order_number, total, payment_method, shipping_address_line1, shipping_address_city, shipping_address_state, shipping_address_postal_code) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        [order_number, total, paymentMethod, shippingAddress.line1, shippingAddress.city, shippingAddress.state, shippingAddress.postal_code]
+        'INSERT INTO orders (order_number, total, payment_method, shipping_address_line1, shipping_address_city, shipping_address_state, shipping_address_postal_code,user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+        [order_number, total, paymentMethod, shippingAddress.line1, shippingAddress.city, shippingAddress.state, shippingAddress.postal_code,user_id]
       );
 
       const createdOrder = result.rows[0];
