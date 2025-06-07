@@ -50,8 +50,9 @@ const finalizeOrder = async (req, res) => {
   // ...
   try {
     const createdOrder = await OrderModel.createOrder(orderData); // This returns the main order details
+    console.log(createdOrder)
     const orderId = createdOrder.id;
-    console.log(orderId)
+    // console.log(orderId)
     // Fetch order items (assuming you have an order_items table and a function to fetch items by order ID)
     const orderItems = await OrderModel.getOrderItems(orderId); // You'll need to implement this function
 
