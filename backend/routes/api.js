@@ -15,6 +15,7 @@ const {
   getOrderById,
   createOrder,
   finalizeOrder,
+  getOrders
 } = require('../controllers/orderController');
 const multer = require('multer');
 require('dotenv').config();
