@@ -8,6 +8,7 @@ import type { StripeCardElementChangeEvent } from "@stripe/stripe-js"
 import { useRouter } from "next/navigation"
 import {useBillingStore} from "@/store/billingStore"
 import { useOrderHistoryStore } from "@/store/orderHistoryStore"; // Import the store
+import { useCart } from "@/context/cart-context"
 
 interface StripeCheckoutFormProps {
   amount: number
@@ -33,7 +34,7 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
   const emailInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter();
   const addOrderToHistory = useOrderHistoryStore((state) => state.addOrder);
-
+  const { state:{items}} = useCart();
   // Format amount for display
   const formattedAmount = (amount / 100).toFixed(2)
   // console.log(address1,address2,city,state,zipCode)
@@ -206,21 +207,33 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
 
       if (paymentIntent && paymentIntent.status === "succeeded") {
         console.log("Payment successful:", paymentIntent);
-  
+        const paymentMethodType = paymentIntent.payment_method_types[0]; // Get the first payment method type
+
+    // Populate the items array from your cart items
+    const orderItems = items.map(item => ({
+      name: item.name, // Assuming your item object has a name property
+      quantity: item.quantity, // Assuming your item object has a quantity property
+      price: item.price.toString(), // Assuming your item object has a price property (should be in a suitable format for your backend)
+      // Include other properties if needed by your backend (e.g., productId, image, etc.)
+    }));
         // Assuming you have the necessary order details available here
         const newOrder = {
-            date: new Date().toISOString(), // Use current date or date from backend
-            total: (amount / 100).toFixed(2), // Use the amount
-            paymentMethod: "Credit Card", // Or dynamically get the payment method
-            items: [], // Populate with actual items from the cart/order
-            // Add shipping address details
-            shippingAddress: {
-                line1: address1,
-                city: city,
-                state: state,
-                postal_code: zipCode,
-            }
+          date: new Date().toISOString(), // Use current date or date from backend
+          total: (amount / 100).toFixed(2), // Use the amount (format as string with 2 decimal places)
+          paymentMethod: paymentMethodType, // Use the dynamic payment method type
+          items: orderItems, // Include the populated order items
+          shippingAddress: {
+            line1: address1,
+            city: city,
+            state: state,
+            postal_code: zipCode,
+            // Include address2 if available and needed
+            line2: address2 || '', // Assuming address2 is optional
+          },
         };
+    
+        console.log("New Order Data:", newOrder); // Log the newOrder object to verify
+    
 
         // 2. Call backend endpoint to finalize the order and get the orderId
         const finalizeResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/finalize`, {
