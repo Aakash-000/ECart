@@ -22,7 +22,7 @@ export default function CartPage() {
   const { isAuthenticated, isLoading } = useAuthStore()
   const router = useRouter()
   const { items, subtotal, discount, shipping, tax, total } = state
-
+  console.log(items)
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       // Check if the current path is already /login to avoid infinite redirects
