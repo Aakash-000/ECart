@@ -51,7 +51,7 @@ const finalizeOrder = async (req, res) => {
   try {
     // Call the model function to create the order in the database
     const createdOrder = await OrderModel.createOrder(orderData);
-
+    console.log(createdOrder)
     // Return the created order including its ID
     res.status(201).json(createdOrder);
 
