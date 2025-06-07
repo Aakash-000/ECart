@@ -242,7 +242,7 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
 
         const finalizedOrder = await finalizeResponse.json();
         const backendOrderId = finalizedOrder.id; // Get the orderId from the backend's finalized order response
-
+        console.log(backendOrderId)
         // Add to history using the backend orderId
         addOrderToHistory({...newOrder, orderNumber: finalizedOrder.orderNumber });
 
