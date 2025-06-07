@@ -186,8 +186,8 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
           setIsLoading(false);
           return;
       }
-      console.log(response.json())
-      const { paymentIntent, error: stripeError, orderId } = await stripe.confirmCardPayment(clientSecret, { // Assuming orderId is returned here
+      
+      const { paymentIntent, error: stripeError} = await stripe.confirmCardPayment(clientSecret, { // Assuming orderId is returned here
         payment_method: {
           card: cardElement,
           billing_details: {
@@ -203,14 +203,12 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
           },
         },
       });
-      console.log(orderId)
 
       if (paymentIntent && paymentIntent.status === "succeeded") {
         console.log("Payment successful:", paymentIntent);
   
         // Assuming you have the necessary order details available here
         const newOrder = {
-            orderNumber: orderId, // Use the orderId from the backend
             date: new Date().toISOString(), // Use current date or date from backend
             total: (amount / 100).toFixed(2), // Use the amount
             paymentMethod: "Credit Card", // Or dynamically get the payment method
