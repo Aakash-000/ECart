@@ -135,6 +135,7 @@ export default function Navbar() {
                 <DropdownMenuContent>
                   <DropdownMenuItem><Link href="/admin/add-product">Add Product</Link></DropdownMenuItem>
                   <DropdownMenuItem><Link href="/admin/add-category">Add Category</Link></DropdownMenuItem>
+                  <DropdownMenuItem><Link href="/user/orders">Orders</Link></DropdownMenuItem>
                 </DropdownMenuContent>
                 </DropdownMenu>
                </Link>
