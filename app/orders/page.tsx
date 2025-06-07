@@ -29,7 +29,7 @@ const OrdersPage = () => {
     queryKey: ["userOrders"], // Unique query key for user orders
     queryFn: fetchUserOrders,
   });
-
+  console.log(orders)
   if (isLoading) {
     return <div className="container mx-auto mt-8">Loading orders...</div>;
   }
