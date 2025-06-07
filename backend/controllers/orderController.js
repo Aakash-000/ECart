@@ -13,8 +13,31 @@ const getOrderById = async (req, res) => {
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
+    
+    const orderItems = await OrderModel.getOrderItems(orderId);
 
-    res.status(200).json(order);
+    // Format the response to match the frontend's OrderDetails interface
+    const formattedOrderDetails = {
+      orderNumber: order.order_number, // Assuming backend uses snake_case
+      date: order.created_at, // Assuming you have a created_at column
+      total: order.total.toString(), // Convert total to string as frontend expects
+      paymentMethod: order.payment_method, // Assuming backend uses snake_case
+      items: orderItems.map(item => ({ // Map backend item structure to frontend
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price.toString(), // Convert item price to string
+      })),
+      shippingAddress: {
+        line1: order.shipping_address_line1, // Assuming backend stores address in separate columns
+        city: order.shipping_address_city,
+        state: order.shipping_address_state,
+        postal_code: order.shipping_address_postal_code,
+        // Include other address fields if they exist in your orders table
+      },
+      // Add other fields if needed from the order object
+    };
+
+    res.status(200).json(formattedOrderDetails);
 
   } catch (error) {
     console.error('Error fetching order details:', error);
