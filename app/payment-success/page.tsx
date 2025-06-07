@@ -40,7 +40,7 @@ export default function PaymentSuccessPage() {
         throw new Error("Order ID not provided");
       }
       // Fetch order details from your backend API
-      const response = await fetch(`/api/orders/${orderId}`); // Replace with your actual API endpoint
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/${orderId}`); // Replace with your actual API endpoint
       if (!response.ok) {
         throw new Error("Failed to fetch order details");
       }
