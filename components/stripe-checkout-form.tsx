@@ -186,7 +186,7 @@ export default function StripeCheckoutForm({ amount = 83400 }: StripeCheckoutFor
           setIsLoading(false);
           return;
       }
-  
+      console.log(response)
       const { paymentIntent, error: stripeError, orderId } = await stripe.confirmCardPayment(clientSecret, { // Assuming orderId is returned here
         payment_method: {
           card: cardElement,
