@@ -76,6 +76,9 @@ const finalizeOrder = async (req, res) => {
     res.status(201).json(formattedOrderDetails); // Send the formatted data
   } catch (error) {
     // ...
+    console.error('Error finalizing order:', error);
+    res.status(500).json({ message: 'Internal server error' });
+
   }
 };
 
