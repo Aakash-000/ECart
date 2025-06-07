@@ -45,21 +45,40 @@ const createOrder = async (req, res) => {
 // @route   POST /api/orders/finalize
 // @access  Private (adjust access based on your authentication)
 const finalizeOrder = async (req, res) => {
-  // Extract payment intent ID and order data from the request body
-  const { paymentIntentId, orderData } = req.body;
-
+  // ...
   try {
-    // Call the model function to create the order in the database
-    const createdOrder = await OrderModel.createOrder(orderData);
-    console.log(createdOrder)
-    // Return the created order including its ID
-    res.status(201).json(createdOrder);
+    const createdOrder = await OrderModel.createOrder(orderData); // This returns the main order details
+    const orderId = createdOrder.id;
 
+    // Fetch order items (assuming you have an order_items table and a function to fetch items by order ID)
+    const orderItems = await OrderModel.getOrderItems(orderId); // You'll need to implement this function
+
+    // Format the response to match the frontend's OrderDetails interface
+    const formattedOrderDetails = {
+      orderNumber: createdOrder.order_number,
+      date: createdOrder.created_at, // Assuming you have a created_at column
+      total: createdOrder.total.toString(), // Convert total to string
+      paymentMethod: createdOrder.payment_method,
+      items: orderItems.map(item => ({ // Map backend item structure to frontend
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price.toString(), // Convert price to string
+      })),
+      shippingAddress: {
+        line1: createdOrder.shipping_address_line1,
+        city: createdOrder.shipping_address_city,
+        state: createdOrder.shipping_address_state,
+        postal_code: createdOrder.shipping_address_postal_code,
+      },
+      // Add other fields if needed
+    };
+
+    res.status(201).json(formattedOrderDetails); // Send the formatted data
   } catch (error) {
-    console.error('Error finalizing order:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    // ...
   }
 };
+
 
 // Add other controller functions for updating, deleting orders, etc.
 
