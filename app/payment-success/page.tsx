@@ -61,7 +61,7 @@ export default function PaymentSuccessPage() {
   if (!orderDetails) {
     return <div>No order details found.</div>;
   }
-
+  console.log(orderDetails)
   return (
     <div className="flex items-center justify-center min-h-[80vh] px-4">
       <Card className="w-full max-w-md">
