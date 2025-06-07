@@ -55,9 +55,10 @@ const finalizeOrder = async (req, res) => {
     console.log(orderId)
     // Fetch order items (assuming you have an order_items table and a function to fetch items by order ID)
     const orderItems = await OrderModel.getOrderItems(orderId); // You'll need to implement this function
-
+    // console.log(orderItems)
     // Format the response to match the frontend's OrderDetails interface
     const formattedOrderDetails = {
+      id:createdOrder.id,
       orderNumber: createdOrder.order_number,
       date: createdOrder.created_at, // Assuming you have a created_at column
       total: createdOrder.total.toString(), // Convert total to string
@@ -75,7 +76,7 @@ const finalizeOrder = async (req, res) => {
       },
       // Add other fields if needed
     };
-
+    console.log(formattedOrderDetails)
     res.status(201).json(formattedOrderDetails); // Send the formatted data
   } catch (error) {
     // ...
