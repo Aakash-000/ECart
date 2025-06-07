@@ -76,6 +76,7 @@ export default function CartPage() {
   }
   console.log(items)
   return (
+    
       <div className="container mx-auto px-4 py-6">
         <h1 className="text-2xl font-bold mb-6">Your Shopping Cart</h1>
 
@@ -114,7 +115,7 @@ export default function CartPage() {
                           <div className="flex items-center sm:w-1/2 mb-4 sm:mb-0">
                             <div className="relative w-20 h-20 bg-indigo-50 rounded-xl overflow-hidden mr-4">
                             <Image
-  src={`http://localhost:3000${item.image_url ?? '/placeholder.png'}`}
+  src={`http://localhost:3000${item.image_url} ?? '/placeholder.png'}`}
   alt={item.name ?? 'Product image'}
   fill
 />
