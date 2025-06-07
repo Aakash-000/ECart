@@ -6,7 +6,7 @@ const OrderModel = require('../models/orderModel'); // Import the SQL-based Orde
 // @access  Public (adjust access based on your authentication)
 const getOrderById = async (req, res) => {
   const orderId = req.params.orderId;
-
+  console.log(orderId)
   try {
     const order = await OrderModel.findOrderById(orderId); // Call the SQL-based model function
 
