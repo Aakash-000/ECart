@@ -127,31 +127,31 @@ const CartContext = createContext<
 
 // Sample products for demo purposes
 const sampleProducts: CartItem[] = [
-  {
-    id: 2,
-    name: "Airpods Max",
-    variant: "Color: Red",
-    price: 439.0,
-    originalPrice: 549.0,
-    quantity: 1,
-    image_url: "images/products/airpods-max.png",
-  },
-  {
-    id: 3,
-    name: "Bose Headphones",
-    variant: "Color: Black",
-    price: 289.99,
-    quantity: 1,
-    image_url: "images/products/bose-headphones.png",
-  },
-  {
-    id: 5,
-    name: "JBL TUNE 660BTNC",
-    variant: "Color: Black",
-    price: 159.99,
-    quantity: 1,
-    image_url: "images/products/jbl-headphones.png",
-  },
+  // {
+  //   id: 2,
+  //   name: "Airpods Max",
+  //   variant: "Color: Red",
+  //   price: 439.0,
+  //   originalPrice: 549.0,
+  //   quantity: 1,
+  //   image_url: "images/products/airpods-max.png",
+  // },
+  // {
+  //   id: 3,
+  //   name: "Bose Headphones",
+  //   variant: "Color: Black",
+  //   price: 289.99,
+  //   quantity: 1,
+  //   image_url: "images/products/bose-headphones.png",
+  // },
+  // {
+  //   id: 5,
+  //   name: "JBL TUNE 660BTNC",
+  //   variant: "Color: Black",
+  //   price: 159.99,
+  //   quantity: 1,
+  //   image_url: "images/products/jbl-headphones.png",
+  // },
 ]
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
