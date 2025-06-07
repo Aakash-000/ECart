@@ -56,7 +56,19 @@ const OrderModel = {
       throw error; // Re-throw the error
     }
   },
-
+  
+  async getOrderItems(orderId) {
+    try {
+      const result = await pool.query(
+        'SELECT name, quantity, price FROM order_items WHERE order_id = $1', // Adjust table and column names as per your schema
+        [orderId]
+      );
+      return result.rows;
+    } catch (error) {
+      console.error('Error fetching order items:', error);
+      throw error;
+    }
+  },
   // Add other SQL-based functions for updating, deleting orders, etc.
 };
 
