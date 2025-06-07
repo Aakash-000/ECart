@@ -109,6 +109,30 @@ const finalizeOrder = async (req, res) => {
   }
 };
 
+const getOrders = async (req, res) => {
+  try {
+    // Assuming your authMiddleware adds user information to the request (e.g., req.user.id)
+    const userId = req.user.id; // Get the user ID from the authenticated user
+
+    // Fetch all orders for the user from the database
+    const orders = await OrderModel.findOrdersByUserId(userId); // You'll need to implement this function
+
+    // You might want to format the order data to match the OrderSummary interface
+    const formattedOrders = orders.map(order => ({
+      id: order.id,
+      orderNumber: order.order_number, // Assuming backend uses snake_case
+      date: order.created_at, // Assuming you have a created_at column
+      total: order.total.toString(), // Convert total to string
+      paymentMethod: order.payment_method, // Assuming backend uses snake_case
+      // Include other properties for OrderSummary if available in your order data
+    }));
+
+    res.status(200).json(formattedOrders);
+  } catch (error) {
+    console.error('Error getting user orders:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 // Add other controller functions for updating, deleting orders, etc.
 
@@ -116,6 +140,7 @@ module.exports = {
   getOrderById,
   createOrder,
   finalizeOrder,
+  getOrders
 };
 
 

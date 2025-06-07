@@ -17,6 +17,16 @@ const OrderModel = {
     }
   },
 
+
+  async findOrdersByUserId(userId) {
+    try {
+      const result = await pool.query('SELECT * FROM orders WHERE user_id = $1', [userId]); // Adjust user_id column name
+      return result.rows;
+    } catch (error) {
+      console.error('Error finding orders by user ID:', error);
+      throw error;
+    }
+  },
   /**
    * Creates a new order in the database.
    * @param {object} orderData The data for the new order.
@@ -56,7 +66,7 @@ const OrderModel = {
       throw error; // Re-throw the error
     }
   },
-  
+
   async getOrderItems(orderId) {
     try {
       const result = await pool.query(

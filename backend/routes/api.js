@@ -39,6 +39,7 @@ authenticatedRouter.post('/products', upload.single('image'), ProductController.
 
 authenticatedRouter.get('/orders/:orderId', getOrderById);
 authenticatedRouter.post('/orders', createOrder);
+authenticatedRouter.get('/orders', getOrders);
 authenticatedRouter.post('/orders/finalize', finalizeOrder);
 
 
