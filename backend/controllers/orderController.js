@@ -52,7 +52,7 @@ const createOrder = async (req, res) => {
   // In a real application, you would get order data from the request body
   // and user information from the authenticated user.
   const orderData = req.body; // Assuming order data is in the request body
-  console.log(req.user.id)
+  console.log("This is the userID:",req.user.id)
   const finalOrderData = {...orderData,user_id:req.user.id}
   try {
     const createdOrder = await OrderModel.createOrder(finalOrderData); // Call the SQL-based model function
