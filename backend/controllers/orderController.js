@@ -114,19 +114,8 @@ const getOrders = async (req, res) => {
     const userId = req.user.id; // Get the user ID from the authenticated user
     console.log(userId)
     // Fetch all orders for the user from the database
-    const orders = await OrderModel.findOrdersByUserId(userId); // You'll need to implement this function
-    console.log(orders)
-    // You might want to format the order data to match the OrderSummary interface
-    const formattedOrders = orders.map(order => ({
-      id: order.id,
-      orderNumber: order.order_number, // Assuming backend uses snake_case
-      date: order.created_at, // Assuming you have a created_at column
-      total: order.total.toString(), // Convert total to string
-      paymentMethod: order.payment_method, // Assuming backend uses snake_case
-      // Include other properties for OrderSummary if available in your order data
-    }));
-
-    res.status(200).json(formattedOrders);
+    const orders = await OrderModel.findOrdersByUserId(userId);
+    res.status(200).json(orders);
   } catch (error) {
     console.error('Error getting user orders:', error);
     res.status(500).json({ message: 'Internal server error' });
