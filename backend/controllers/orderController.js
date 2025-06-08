@@ -67,8 +67,7 @@ const createOrder = async (req, res) => {
 // @route   POST /api/orders/finalize
 // @access  Private (adjust access based on your authentication)
 const finalizeOrder = async (req, res) => {
-  const { paymentIntentI
-    d, orderData } = req.body;
+  const { paymentIntentId, orderData } = req.body;
   const userId = req.user.id
   // ...
   try {
