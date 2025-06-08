@@ -4,7 +4,19 @@
 
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { OrderSummary } from "@/types/order"; // Import the OrderSummary interface
+// Import the OrderSummary interface and add details for items and shipping address
+interface OrderItem {
+  name: string;
+  quantity: number;
+  price: string;
+}
+
+interface ShippingAddress {
+  line1: string;
+  city: string;
+  state: string;
+  postal_code: string;
+}
 
 const fetchUserOrders = async (): Promise<OrderSummary[]> => {
   // Assuming your backend is at /api/orders and requires authentication
@@ -17,6 +29,18 @@ const fetchUserOrders = async (): Promise<OrderSummary[]> => {
   }
 
   return response.json();
+};
+
+// Update the OrderSummary interface to include items and shippingAddress
+interface OrderSummary {
+  id: string;
+  orderNumber: string;
+  date: string;
+  total: string;
+  paymentMethod: string;
+  status: string;
+  items: OrderItem[];
+  shippingAddress: ShippingAddress;
 };
 
 const OrdersPage = () => {
@@ -66,7 +90,24 @@ const OrdersPage = () => {
               </div>
               <p className="text-gray-600 text-sm mb-2">Date: {new Date(order.date).toLocaleDateString()}</p>
               <p className="text-gray-800 font-bold">Total: ${parseFloat(order.total).toFixed(2)}</p> {/* Convert total to number and format */}
-              {/* You can add more details here, like a link to the order details page */}
+
+              <div className="mt-4">
+                <h3 className="text-md font-semibold mb-2">Items:</h3>
+                <ul className="list-disc list-inside">
+                  {order.items.map((item, itemIndex) => (
+                    <li key={itemIndex} className="text-gray-700 text-sm">
+                      {item.name} (x{item.quantity}) - ${parseFloat(item.price).toFixed(2)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mt-4">
+                <h3 className="text-md font-semibold mb-2">Shipping Address:</h3>
+                <p className="text-gray-700 text-sm">{order.shippingAddress.line1}</p>
+                <p className="text-gray-700 text-sm">{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postal_code}</p>
+              </div>
+
             </div>
           ))}
         </div>

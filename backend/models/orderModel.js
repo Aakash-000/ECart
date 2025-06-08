@@ -20,11 +20,23 @@ const OrderModel = {
 
   async findOrdersByUserId(userId) {
     try {
-      const result = await pool.query('SELECT * FROM orders WHERE user_id = $1', [userId]); // Adjust user_id column name
-      return result.rows;
+      const ordersResult = await pool.query('SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC', [userId]); // Adjust user_id column name and add ordering
+      const orders = ordersResult.rows;
+
+      // For each order, fetch its items
+      const ordersWithItems = await Promise.all(orders.map(async (order) => {
+        const itemsResult = await pool.query('SELECT name, quantity, price FROM order_items WHERE order_id = $1', [order.id]); // Adjust table and column names
+        return {
+          ...order,
+          items: itemsResult.rows,
+        };
+      }));
+
+      return ordersWithItems;
+
     } catch (error) {
       console.error('Error finding orders by user ID:', error);
-      throw error;
+      throw error; // Re-throw the error
     }
   },
   /**
