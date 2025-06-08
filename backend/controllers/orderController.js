@@ -52,10 +52,8 @@ const createOrder = async (req, res) => {
   // In a real application, you would get order data from the request body
   // and user information from the authenticated user.
   const orderData = req.body; // Assuming order data is in the request body
-  console.log("This is the userID:",req.user.id)
-  const finalOrderData = {...orderData,user_id:req.user.id}
   try {
-    const createdOrder = await OrderModel.createOrder(finalOrderData); // Call the SQL-based model function
+    const createdOrder = await OrderModel.createOrder(orderData); // Call the SQL-based model function
 
     res.status(201).json(createdOrder); // 201 for resource created
 
@@ -69,11 +67,12 @@ const createOrder = async (req, res) => {
 // @route   POST /api/orders/finalize
 // @access  Private (adjust access based on your authentication)
 const finalizeOrder = async (req, res) => {
-  const { paymentIntentId, orderData } = req.body;
-
+  const { paymentIntentI
+    d, orderData } = req.body;
+  const userId = req.user.id
   // ...
   try {
-    const createdOrder = await OrderModel.createOrder(orderData); // This returns the main order details
+    const createdOrder = await OrderModel.createOrder({...orderData,user_id:userId}); // This returns the main order details
     console.log(createdOrder)
     const orderId = createdOrder.id;
     console.log(orderId)

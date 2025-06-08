@@ -12,6 +12,7 @@ interface Order {
     quantity: number;
     price: string;
   }>;
+  user_id:number;
 }
 
 interface OrderHistoryState {
