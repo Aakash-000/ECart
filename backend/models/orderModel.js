@@ -34,7 +34,7 @@ const OrderModel = {
    */
   async createOrder(orderData) {
     const { items, shippingAddress, paymentMethod, total,user_id } = orderData;
-    const order_number = `ORDER-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`; // Generate a unique order number
+    const order_number = `ORDER-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`; // Generate a unique order number
 
     try {
       // Insert the main order details
