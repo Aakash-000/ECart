@@ -1,0 +1,14 @@
+{
+  "buildCommand": "cd app && next build && cd ../backend && npm install && copyfiles server.js ../dist && cd ../app && copyfiles -u 1 .next/* ../dist",
+  "outputDirectory": "dist",
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "dist/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "dist/app"
+    }
+  ]
+}
