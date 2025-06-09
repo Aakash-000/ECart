@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
 
-// Initialize Stripe with your secret key from environment variables
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2023-10-16",
-})
+let stripe: Stripe;
+
+const getStripe = async () => {
+  if (!stripe) {
+    const Stripe = (await import('stripe')).default;
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2023-10-16",
+    });
+  }
+  return stripe;
+};
 
 // Get webhook secret from environment variables
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
@@ -16,7 +23,7 @@ export async function POST(request: Request) {
   let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(payload, sig, endpointSecret)
+    event = (await getStripe()).webhooks.constructEvent(payload, sig, endpointSecret)
   } catch (err: any) {
     console.error(`Webhook Error: ${err.message}`)
     return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 })
