@@ -1,6 +1,6 @@
 // app/payment-success/page.tsx
 "use client";
-
+import { Suspense } from 'react';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +28,7 @@ interface OrderDetails {
   };
 }
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId"); // Get orderId from query params
 
@@ -41,7 +41,7 @@ export default function PaymentSuccessPage() {
       }
       // Fetch order details from your backend API
       const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/orders/${orderId}`,{credentials:"include"}); // Replace with your actual API endpoint
-      
+
       if (!response.ok) {
         throw new Error("Failed to fetch order details");
       }
@@ -63,42 +63,51 @@ export default function PaymentSuccessPage() {
   }
   console.log(orderDetails)
   return (
-    <div className="flex items-center justify-center min-h-[80vh] px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="flex flex-col items-center space-y-2">
-          <CheckCircle2 className="h-12 w-12 text-green-500" />
-          <CardTitle className="text-2xl font-bold">Payment Successful!</CardTitle>
-        </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <p className="text-gray-600">Thank you for your order. Your payment has been processed successfully.</p>
-          <div className="border-t border-b border-gray-200 py-4 text-left">
-            <p><strong>Order Number:</strong> {orderDetails.orderNumber}</p>
-            <p><strong>Date:</strong> {new Date(orderDetails.date).toLocaleDateString()}</p> {/* Format date */}
-            <p><strong>Total:</strong> {orderDetails.total}</p>
-            <p><strong>Payment Method:</strong> {orderDetails.paymentMethod}</p>
-            {/* Display items and shipping address */}
-            <div className="mt-4">
-              <h4 className="text-lg font-semibold">Items:</h4>
-              <ul>
-                {orderDetails.items.map((item, index) => (
-                  <li key={index}>{item.name} ({item.quantity}) - {item.price}</li>
-                ))}
-              </ul>
+      <div className="flex items-center justify-center min-h-[80vh] px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="flex flex-col items-center space-y-2">
+            <CheckCircle2 className="h-12 w-12 text-green-500" />
+            <CardTitle className="text-2xl font-bold">Payment Successful!</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-gray-600">Thank you for your order. Your payment has been processed successfully.</p>
+            <div className="border-t border-b border-gray-200 py-4 text-left">
+              <p><strong>Order Number:</strong> {orderDetails.orderNumber}</p>
+              <p><strong>Date:</strong> {new Date(orderDetails.date).toLocaleDateString()}</p> {/* Format date */}
+              <p><strong>Total:</strong> {orderDetails.total}</p>
+              <p><strong>Payment Method:</strong> {orderDetails.paymentMethod}</p>
+              {/* Display items and shipping address */}
+              <div className="mt-4">
+                <h4 className="text-lg font-semibold">Items:</h4>
+                <ul>
+                  {orderDetails.items.map((item, index) => (
+                      <li key={index}>{item.name} ({item.quantity}) - {item.price}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="mt-4">
+                <h4 className="text-lg font-semibold">Shipping Address:</h4>
+                <p>{orderDetails.shippingAddress.line1}</p>
+                <p>{orderDetails.shippingAddress.city}, {orderDetails.shippingAddress.state} {orderDetails.shippingAddress.postal_code}</p>
+              </div>
             </div>
-            <div className="mt-4">
-              <h4 className="text-lg font-semibold">Shipping Address:</h4>
-              <p>{orderDetails.shippingAddress.line1}</p>
-              <p>{orderDetails.shippingAddress.city}, {orderDetails.shippingAddress.state} {orderDetails.shippingAddress.postal_code}</p>
-            </div>
-          </div>
-          <p className="text-sm text-gray-500">An email confirmation has been sent to your inbox.</p>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <Link href="/" passHref>
-            <Button>Continue Shopping</Button>
-          </Link>
-        </CardFooter>
-      </Card>
-    </div>
+            <p className="text-sm text-gray-500">An email confirmation has been sent to your inbox.</p>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <Link href="/" passHref>
+              <Button>Continue Shopping</Button>
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
+  );
+}
+
+
+export default function PaymentSuccessPage() {
+  return (
+      <Suspense fallback={<div>Loading...</div>}>
+        <PaymentSuccessContent />
+      </Suspense>
   );
 }
