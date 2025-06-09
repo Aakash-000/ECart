@@ -3,7 +3,7 @@
 # dependencies
 /node_modules
 /backend/node_modules/
-/.vscode
+
 # next.js
 /.next/
 /out/
@@ -26,3 +26,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.idea/
+.next/
+.vscode/
