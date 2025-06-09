@@ -1,10 +1,18 @@
 import { NextResponse } from "next/server"
-import Stripe from "stripe"
+// We will dynamically import Stripe later
+// import Stripe from "stripe"
 
-// Initialize Stripe with your secret key from environment variables
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2023-10-16",
-})
+let stripe: any; // Use 'any' type for now to avoid strict type issues with dynamic import
+
+const getStripe = async () => {
+  if (!stripe) {
+    const Stripe = (await import('stripe')).default;
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2023-10-16", // Use your desired API version
+    });
+  }
+  return stripe;
+};
 
 interface RequestBody {
   amount: number
@@ -13,6 +21,7 @@ interface RequestBody {
 
 export async function POST(request: Request) {
   try {
+    const stripe = await getStripe();
     const { amount, payment_method_id }: RequestBody = await request.json()
 
     // Create a PaymentIntent with the order amount and currency
