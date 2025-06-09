@@ -1,5 +1,5 @@
 {
-  "buildCommand": "ROOT_DIR=app next build && cd backend && npm install && npx copyfiles server.js ../dist && mv app/.next/* dist/",
+  "buildCommand": "ROOT_DIR=app next build && cd backend && npm install && npx copyfiles server.js ../dist && cd .. && mv app/.next/* dist/",
   "outputDirectory": "dist",
   "routes": [
     {
