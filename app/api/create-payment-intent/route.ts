@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import Stripe from "stripe";
 // We will dynamically import Stripe later
 // import Stripe from "stripe"
 
