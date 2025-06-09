@@ -27,6 +27,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+.backend/uploads/images
 .idea/
 .next/
 .vscode/
