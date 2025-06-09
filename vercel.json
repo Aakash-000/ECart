@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx next build app && cd backend && npm install && npx copyfiles server.js ../dist && npx copyfiles -u 1 app/.next/* dist/",
+  "buildCommand":"npx next build app && cd backend && npm install && npx copyfiles server.js ../dist && npx copyfiles -u 1 app/.next/* dist/",
   "outputDirectory": "dist",
   "routes": [
     {
