@@ -104,8 +104,8 @@ const OrdersPage = () => {
 
               <div className="mt-4">
                 <h3 className="text-md font-semibold mb-2">Shipping Address:</h3>
-                <p className="text-gray-700 text-sm">{order.shippingAddress.line1}</p>
-                <p className="text-gray-700 text-sm">{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postal_code}</p>
+                <p className="text-gray-700 text-sm">{order.shippingAddress?.line1}</p>
+                <p className="text-gray-700 text-sm">{order.shippingAddress?.city} {order.shippingAddress?.state} {order.shippingAddress?.postal_code}</p>
               </div>
 
             </div>
