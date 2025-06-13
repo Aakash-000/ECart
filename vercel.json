@@ -1,14 +1,15 @@
 {
-  "buildCommand":"npx next build app && cd backend && npm install && npx copyfiles server.js ../dist && npx copyfiles -u 1 app/.next/* dist/",
-  "outputDirectory": "dist",
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "dist/server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "dist/app"
+      "dest": "server.js"
     }
   ]
 }
